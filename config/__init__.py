@@ -5,14 +5,17 @@ LoggingMode: bool = False
 
 # Variables to connect:
 # Aiogram Bot
-# BOT_TOKEN: str = 'bot_token'
 BOT_TOKEN: str = 'bot_token'
 PARSE_MODE: str = 'HTML'
 
 # Databases
 # !!! Please keep your database files in the config/ folder !!!
 # You can create multiple paths and instantiate with them
-DB_PATH_1: str = 'config/ExampleDataBase.db'
+# To use SQLite3 database
+SQLITE_DB_PATH: str = 'config/Example.db'
+
+# To use PostgreSQL database
+POSTGRES_DB = ('your_own_session_name', 'user', 'password', 'database', 'host')  # Input data
 
 # Other variables:
 # Roles
