@@ -24,4 +24,4 @@ dp = Dispatcher(bot, storage=storage, loop=loop)
 
 
 # Comment if you no need to user PostgreSQL Database
-db = database.PostgreSQLDatabase(POSTGRES_DB)
+db = database.PostgreSQLDatabase(*POSTGRES_DB)
