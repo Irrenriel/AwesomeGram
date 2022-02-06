@@ -1,16 +1,40 @@
-from aiogram import executor, Dispatcher
-from resources.models import dp, loop, db
+from logging import info
 
-# The most important to write this import!
-from src import handlers
+from aiogram import executor, Dispatcher
+
+from config import config
+from resources.models import dp, loop
+from resources.tools import bot_logging
+
+from resources.tools.middleware import installing_middlewares
+from src.handlers import run_handlers
 
 
 async def startup_func(dp: Dispatcher):
-    # con = await db.connect()
-    # if not con:
-    #     raise Exception('Can not connect to Database')
-    print('< < < Bot is working! > > >')
+    info('= = = Starting a bot! = = =')
+    info(f'Current version: {config.CURRENT_VERSION}')
+
+    # Skip updates
+    await dp.skip_updates()
+
+    # Handlers
+    await run_handlers(dp)
+
+    info('= = = = = = = = =')
+
+    # Connecting to databases
+    # await db.connect()
+
+    info('= = = = = = = = =')
+
+    # Middlewares
+    await installing_middlewares(dp)
+
+    info('= = = Bot is working! = = =')
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True, loop=loop)
+    # Set Logging
+    bot_logging.set_logging(config.debug)
+
+    executor.start_polling(dp, loop=loop, on_startup=startup_func)

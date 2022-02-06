@@ -9,7 +9,7 @@ from aiogram.dispatcher.filters.builtin import Command, ChatTypeFilter, Text, Is
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram.types import Message, CallbackQuery
 
-from config import ADMINS_ID
+from config import config
 
 
 # Creating filters
@@ -28,9 +28,9 @@ class IsUser(BoundFilter):
 
         # Is User Admin or not Admin
         if self.is_admin is not None:
-            if self.is_admin and user.id not in ADMINS_ID:
+            if self.is_admin and user.id not in config.ADMINS_ID:
                 return False
-            elif not self.is_admin and user.id in ADMINS_ID:
+            elif not self.is_admin and user.id in config.ADMINS_ID:
                 return False
 
         # Is User Has Username

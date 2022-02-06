@@ -3,8 +3,8 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from config import BOT_TOKEN, PARSE_MODE, POSTGRES_DB
-from resources.tools import database
+from config import config
+
 
 # Here you can create tool instances if you needed.
 
@@ -17,11 +17,11 @@ storage = MemoryStorage()
 
 
 # Bots
-bot = Bot(token=BOT_TOKEN, loop=loop, parse_mode=PARSE_MODE)
+bot = Bot(token=config.BOT_TOKEN, loop=loop, parse_mode=config.PARSE_MODE)
 
 # Dispatchers
 dp = Dispatcher(bot, storage=storage, loop=loop)
 
 
 # Comment if you no need to user PostgreSQL Database
-db = database.PostgreSQLDatabase(POSTGRES_DB)
+# db = database.PostgreSQLDatabase(*config.POSTGRES_DB)

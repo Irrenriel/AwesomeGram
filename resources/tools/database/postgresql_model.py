@@ -1,3 +1,5 @@
+from logging import info
+
 import asyncpg
 
 
@@ -24,10 +26,9 @@ class PostgreSQLDatabase:
             database=self._database,
             host=self._host
         )
-        return True
+        info('▻ Database connected!')
 
-    async def fetch(self, request: str, args: list[str] = None, one_row: bool = False) -> \
-            list[asyncpg.Record] | asyncpg.Record | None:
+    async def fetch(self, request: str, args: list = None, one_row: bool = False):
         """
         Get a data rows from database by request.
         :param request: SQL request
@@ -46,21 +47,25 @@ class PostgreSQLDatabase:
 
             # Get All Rows
             else:
-                result: list[asyncpg.Record] = await conn.fetch(request, *args)
+                result = await conn.fetch(request, *args)
                 return result
 
-    async def execute(self, request: str,  args: list[str] = None):
+    async def execute(self, request: str, args: list = None, many: bool = False):
         """
         Execute a request to database.
         :param request: SQL request
         :param args: Args to insert into SQL request
+        :param many: True if you need to user executemany, else False
         :return: bool - True is ok, False is fail
         """
         if args is None:
             args = []
 
         async with self._pool.acquire() as conn:
-            await conn.execute(request, *args)
+            if many:
+                await conn.executemany(request, args)
+            else:
+                await conn.execute(request, *args)
 
     async def disconnect(self):
         """
