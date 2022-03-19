@@ -1,3 +1,4 @@
+import os
 from logging import Filter, StreamHandler, INFO, WARNING, basicConfig
 from logging.handlers import RotatingFileHandler
 from sys import stdout
@@ -16,6 +17,9 @@ def set_logging(debug: bool):
     console_lvl = INFO if debug else WARNING
     console.setLevel(console_lvl)
     console.addFilter(MyFilter(INFO))
+
+    if not os.path.exists('./logs'):
+        os.mkdir('./logs')
 
     file_log = RotatingFileHandler(
         filename='logs/soft.log', mode='a', maxBytes=512_000_000, backupCount=1,
