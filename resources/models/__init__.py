@@ -5,6 +5,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from config import config
 
+from resources.tools import *
+
 
 # Here you can create tool instances if you needed.
 
@@ -24,4 +26,5 @@ dp = Dispatcher(bot, storage=storage, loop=loop)
 
 
 # Comment if you no need to user PostgreSQL Database
-# db = database.PostgreSQLDatabase(*config.POSTGRES_DB)
+# db = PostgreSQLDatabase(*config.POSTGRES_DB)
+# db = SQLite3Database(config.SQLITE_DB_PATH)
