@@ -1,9 +1,4 @@
-__all__ = [
-    'Command', 'ChatTypeFilter', 'Text', 'IsReplyFilter', 'RegexpCommandsFilter', 'IsChat', 'IsUser', 'IsForward'
-]
-
-# Base Filters Import
-from aiogram.dispatcher.filters.builtin import Command, ChatTypeFilter, Text, IsReplyFilter, RegexpCommandsFilter
+from typing import Union
 
 # Types for creating Custom Filters
 from aiogram.dispatcher.filters import BoundFilter
@@ -19,7 +14,7 @@ class IsUser(BoundFilter):
         self.is_admin = is_admin
         self.has_username = has_username
 
-    async def check(self, update: Message | CallbackQuery) -> bool:
+    async def check(self, update: Union[Message, CallbackQuery]) -> bool:
         user = update.from_user
 
         # If User`s ID == self.id
@@ -52,5 +47,5 @@ class IsChat(BoundFilter):
     def __init__(self, chat_id: int):
         self.chat_id = chat_id
 
-    async def check(self, update: Message | CallbackQuery) -> bool:
+    async def check(self, update: Union[Message, CallbackQuery]) -> bool:
         return update.chat.id == self.chat_id
