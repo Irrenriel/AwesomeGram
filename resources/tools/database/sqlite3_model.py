@@ -1,10 +1,13 @@
 import sqlite3
 from logging import info
+from threading import RLock
 from sqlite3 import Connection
 from typing import Optional
 
 
 class SQLite3Database:
+    _lock = RLock()
+
     def __init__(self, path: str):
         self.path = path
         self.con: Connection = Optional[None]
@@ -14,18 +17,23 @@ class SQLite3Database:
         info('▻ Database connected!')
 
     def fetch(self, req: str, args: list = None, one_row: bool = False):
-        args = args if args else []
+        with SQLite3Database._lock:
+            args = args if args else []
+            cursor = self.con.cursor()
 
-        with self.con.cursor() as cursor:
-            res = cursor.fetchone(req, args) if one_row else cursor.fetchall(req, args)
+            cursor.execute(req, args)
+            res = cursor.fetchone() if one_row else cursor.fetchall()
 
-        return res
+            cursor.close()
+            return res
 
     def execute(self, req: str, args: list = None, many: bool = False):
-        args = args if args else []
+        with SQLite3Database._lock:
+            args = args if args else []
+            cursor = self.con.cursor()
 
-        with self.con.cursor() as cursor:
             res = cursor.executemany(req, args) if many else cursor.execute(req, args)
             self.con.commit()
 
-        return res
+            cursor.close()
+            return res
