@@ -5,7 +5,7 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import Message, CallbackQuery, InlineQuery
 
-from resources.tools.middleware.AiogramTTLCache import AiogramTTLCache
+from resources.utils.old.tools.middleware.AiogramTTLCache import AiogramTTLCache
 
 
 class Middleware(BaseMiddleware):

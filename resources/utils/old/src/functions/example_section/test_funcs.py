@@ -1,7 +1,7 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
-from resources.tools.states import ExampleState
+from resources.utils.tools import ExampleState
 
 
 async def test(mes: Message, state: FSMContext):

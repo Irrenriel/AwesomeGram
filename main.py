@@ -3,11 +3,11 @@ from logging import info
 from aiogram import executor, Dispatcher
 
 from config import config
-from resources.models import dp, loop
-from resources.tools import bot_logging
+from resources.utils.old.tools.models import dp, loop
+from resources.utils.old.tools import bot_logging
 
-from resources.tools.middleware import installing_middlewares
-from src.handlers import run_handlers
+from resources.utils.tools import installing_middlewares
+from resources.utils.old.src.handlers import run_handlers
 
 
 async def startup_func(dp: Dispatcher):

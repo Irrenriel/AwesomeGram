@@ -1,11 +1,12 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher.filters import Command, ChatTypeFilter
+from aiogram.types import ChatType
 
-from resources.tools.cfilters import Command, IsUser
-from resources.tools.states import ExampleState
-from src.functions import test
+from resources.utils.old.src.functions import test
 
 
 async def register_example_handlers(dp: Dispatcher):
+    ChatTypeFilter(ChatType.PRIVATE)
     # You should code handlers in such format
     dp.register_message_handler(
         test,  # Function in the first row

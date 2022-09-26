@@ -5,9 +5,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from config import config
 
-from resources.tools import *
-
-
 # Here you can create tool instances if you needed.
 
 # Loop
