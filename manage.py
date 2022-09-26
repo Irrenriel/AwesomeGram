@@ -9,7 +9,7 @@ from resources.utils.base.exceptions import ModuleNameNotFound, InvalidModuleNam
 # Settings:
 
 """Creating a module for Linux if True. Header added: LINUX_HEADER"""
-LINUX_ENCODE = True
+LINUX_ENCODE = False
 LINUX_HEADER = '# -*- coding: utf-8 -*-'
 
 
