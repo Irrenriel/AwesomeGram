@@ -1,0 +1,9 @@
+{{ header }}from aiogram.types import Message
+from aiogram.dispatcher import FSMContext
+
+
+async def {{ name }}_func(mes: Message, state: FSMContext):
+    """
+    Description: Echo bot function.
+    """
+    await mes.answer(mes.text, reply=True)

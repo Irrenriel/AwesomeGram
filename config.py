@@ -4,9 +4,13 @@ from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
-    # Development:
-    # Switch develop instances by this vars
-    debug: bool = "--debug" in argv  # Not CAPS because logging.DEBUG
+    # == Development == #
+    # Debug Mode:
+    debug: bool = "--debug" in argv
+
+    # Creating a module for Linux with the header LINUX_HEADER if True:
+    LINUX_MODE = False
+    LINUX_HEADER = '# -*- coding: utf-8 -*-'
 
     # Variables to connect:
     # Aiogram Bot
