@@ -17,10 +17,10 @@ class CreateModule:
         self.name = argv[index].lower()
 
         if any([ch in self.name for ch in punctuation]):
-            raise InvalidModuleName('Invalid module name. Punctuation marks are not allowed.')
+            raise InvalidModuleName
 
         if len(self.name) > 64:
-            raise InvalidModuleName('Invalid module name. The maximum number of characters is 64.')
+            raise InvalidModuleName
 
         self.path = path
         self.linux_mode = config.LINUX_MODE

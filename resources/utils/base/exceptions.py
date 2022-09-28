@@ -16,6 +16,7 @@ class ModuleNameNotFound(ManageError):
 
 
 class InvalidModuleName(ManageError):
-    def __init__(self, msg: str):
+    def __init__(self):
+        msg = 'Invalid module name. Punctuation marks are not allowed and the maximum number of characters is 64.'
         super().__init__(msg)
 
