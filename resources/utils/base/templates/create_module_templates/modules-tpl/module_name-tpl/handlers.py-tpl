@@ -1,6 +1,7 @@
 {{ header }}from aiogram import Dispatcher
+from aiogram.dispatcher.filters import Text
 
-from modules.{{ name }}.functions import {{ name }}_func
+from modules.{{ name }}.functions import {{ name }}_func, trigger_to_{{ name }}_button
 
 
 async def register_{{ name }}_handlers(dp: Dispatcher):
@@ -24,6 +25,11 @@ async def register_{{ name }}_handlers(dp: Dispatcher):
     )
 
     """
+    dp.register_message_handler(
+        trigger_to_{{ name }}_button,
+        Text('{{ name.title() }} Menu')
+    )
+
     dp.register_message_handler(
         {{ name }}_func
     )

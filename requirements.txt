@@ -2,3 +2,4 @@ aiogram
 asyncpg
 pydantic
 jinja2
+PyYAML

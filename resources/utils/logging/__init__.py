@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from logging import Filter, StreamHandler, INFO, WARNING, basicConfig
 from logging.handlers import RotatingFileHandler

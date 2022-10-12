@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
 from string import punctuation
@@ -49,10 +50,14 @@ class CreateModule:
                     ⊳ functions
                         ⊳ __init__.py
                         ⊳ < module name >.py
+                    ⊳ config.py
                     ⊳ handlers.py
+                    ⊳ middlewares.py
                     ⊳ states.py
-                ⊳ middlewares
             ⊳ resources
+                ⊳ middlewares
+                    ⊳ main_middleware.py
+                    ⊳ throttle_middleware.py
                 ⊳ < module name >
 
         """
@@ -81,8 +86,8 @@ class CreateModule:
                 continue
 
             # Python files:
-            if clean.endswith('.py'):
-                if os.path.isfile(src_path / clean) and self.overwrite:
+            if clean.endswith('.py') or clean.endswith('.yml'):
+                if os.path.isfile(src_path / clean) and not self.overwrite:
                     continue
 
                 tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
