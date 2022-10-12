@@ -1,0 +1,42 @@
+import asyncio
+from logging import info
+
+from aiogram import executor, Dispatcher, Bot
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from modules.handlers import register_handlers
+from modules.middlewares import installing_middlewares
+from modules.config import config
+from resources.utils.logging import GeneralLogger
+
+
+# Main variables:
+loop = asyncio.get_event_loop()
+bot = Bot(token=config.BOT_TOKEN, loop=loop, parse_mode=config.PARSE_MODE)
+dp = Dispatcher(bot, storage=MemoryStorage(), loop=loop)
+
+
+async def startup_func(dp: Dispatcher):
+    info('= = = Starting a bot! = = =')
+    info(f'Current App version: {config.CURRENT_VERSION}')
+
+    # Skip updates:
+    await dp.skip_updates()
+
+    # Register handlers:
+    await register_handlers(dp)
+
+    info('= = = = = = = = =')
+
+    # Installing Middlewares:
+    await installing_middlewares(dp)
+
+    info('= = = Bot is working! = = =')
+
+
+if __name__ == '__main__':
+    # Logging:
+    GeneralLogger.register_logging('console.log', config.debug)
+
+    # Bot Polling:
+    executor.start_polling(dp, loop=loop, on_startup=startup_func)

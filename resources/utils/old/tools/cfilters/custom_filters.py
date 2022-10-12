@@ -3,7 +3,7 @@ from typing import Union
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram.types import Message, CallbackQuery
 
-from config import config
+from resources.utils.old.config import config
 
 
 # Creating filters

@@ -1,5 +1,5 @@
 __all__ = [
-    'ModuleNameNotFound', 'InvalidModuleName'
+    'ModuleNameNotFound', 'InvalidModuleName', 'ModulesNotCreated'
 ]
 
 
@@ -18,5 +18,12 @@ class ModuleNameNotFound(ManageError):
 class InvalidModuleName(ManageError):
     def __init__(self):
         msg = 'Invalid module name. Punctuation marks are not allowed and the maximum number of characters is 64.'
+        super().__init__(msg)
+
+
+class ModulesNotCreated(ManageError):
+    def __init__(self, name: str):
+        msg = f'Directory "{name}" not exist!' if '.' not in name else f'File "{name}" not exist!'
+        msg += ' Please, create module with module creator. (manage.py --create-module <module_name>)'
         super().__init__(msg)
 

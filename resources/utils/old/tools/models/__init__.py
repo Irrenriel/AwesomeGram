@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from config import config
+from resources.utils.old.config import config
 
 # Here you can create tool instances if you needed.
 

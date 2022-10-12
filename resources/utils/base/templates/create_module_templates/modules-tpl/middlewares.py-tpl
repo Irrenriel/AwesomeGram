@@ -1,0 +1,12 @@
+from aiogram import Dispatcher
+
+from resources.middlewares.throttle_middlewares import ThrottleMiddleware
+from resources.middlewares.main_middlewares import MainMiddleware
+
+
+async def installing_middlewares(dp: Dispatcher):
+    dp.middleware.setup(ThrottleMiddleware())
+    info('▻ ThrottleMiddleware is setup!')
+
+    dp.middleware.setup(MainMiddleware())
+    info('▻ Middleware is setup!')

@@ -1,20 +1,22 @@
+import logging
 import os
 from string import punctuation
 from sys import argv
 
 from jinja2 import Environment, FileSystemLoader
 
-from config import config
 from resources.utils.base.exceptions import ModuleNameNotFound, InvalidModuleName
 
 
 class CreateModule:
     def __init__(self, path):
-        index = argv.index('--create-module') + 1
-        if index >= len(argv):
+        index = argv.index('--create-module')
+        name_index = index + 1
+
+        if name_index >= len(argv):
             raise ModuleNameNotFound
 
-        self.name = argv[index].lower()
+        self.name = argv[name_index].lower()
 
         if any([ch in self.name for ch in punctuation]):
             raise InvalidModuleName
@@ -22,10 +24,14 @@ class CreateModule:
         if len(self.name) > 64:
             raise InvalidModuleName
 
-        self.path = path
-        self.linux_mode = config.LINUX_MODE
-        self.linux_header = f'{config.LINUX_HEADER}\n' if self.linux_mode else ''
+        # Default values before args processing:
+        self.overwrite = False
+        self.linux_mode = True
+        self.linux_header = f'# -*- coding: utf-8 -*-\n' if self.linux_mode else ''
 
+        self._args_processing(name_index)
+
+        self.path = path
         self.template_path = self.path / "resources" / "utils" / "base" / "templates" / "create_module_templates"
         self.template_module_name = 'module_name'
 
@@ -50,35 +56,89 @@ class CreateModule:
                 ⊳ < module name >
 
         """
-        self.creating_level(self.template_path, self.path)
+        self._creating_level(self.template_path, self.path)
+        self._creating_files(self.template_path, self.path)
 
-    def creating_level(self, tpl_path, src_path):
+        logging.info(f'Successfully created module "{self.name}"!')
+
+    def _creating_level(self, tpl_path, src_path):
         for ent in os.listdir(tpl_path):
-            if not ent.endswith('-tpl'):
+            clean = self._clear_name(ent)
+
+            if not clean or '.' in ent:
                 continue
 
-            clean = ent.replace('-tpl', '')
+            if not os.path.exists(src_path / clean):
+                os.makedirs(src_path / clean)
 
-            if clean.startswith(self.template_module_name):
-                clean = clean.replace(self.template_module_name, self.name)
+            self._creating_level(tpl_path / ent, src_path / clean)
+
+    def _creating_files(self, tpl_path, src_path):
+        for ent in os.listdir(tpl_path):
+            clean = self._clear_name(ent)
+
+            if not clean:
+                continue
 
             # Python files:
             if clean.endswith('.py'):
+                if os.path.isfile(src_path / clean) and self.overwrite:
+                    continue
+
                 tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
 
                 with open(src_path / clean, mode='w', encoding='UTF-8') as f:
                     f.write(tpl.render(**self.data))
 
-            # Other files (useless now):
-            if '.' in ent:
+            elif '.' in ent:
                 continue
 
-            # Folders:
             else:
-                if not os.path.exists(src_path / clean):
-                    os.makedirs(src_path / clean)
+                self._creating_files(tpl_path / ent, src_path / clean)
 
-                self.creating_level(tpl_path / ent, src_path / clean)
+    def _clear_name(self, ent):
+        if not ent.endswith('-tpl'):
+            return
+
+        clean = ent.replace('-tpl', '')
+
+        if clean.startswith(self.template_module_name):
+            clean = clean.replace(self.template_module_name, self.name)
+
+        return clean
+
+    def _args_processing(self, index):
+        arg_keys = [
+            'overwrite'
+        ]
+
+        for arg in argv[index:]:
+            if '=' not in arg:
+                continue
+
+            args = arg.split('=')
+
+            if len(args) != 2:
+                continue
+
+            k, v = [i.lower() for i in args]
+
+            if k not in arg_keys:
+                continue
+
+            # Overwriting:
+            if k == 'overwrite':
+                if v not in ['true', 'false', '1', '0']:
+                    continue
+
+                self.overwrite = True if v in ['true', '1'] else False
+
+            # Linux Encoding:
+            if k == 'linux':
+                if v not in ['true', 'false', '1', '0']:
+                    continue
+
+                self.linux_mode = True if v in ['true', '1'] else False
 
     @property
     def data(self):

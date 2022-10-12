@@ -2,12 +2,7 @@ from logging import info
 
 from aiogram import executor, Dispatcher
 
-from config import config
-from resources.utils.old.tools.models import dp, loop
-from resources.utils.old.tools import bot_logging
-
-from resources.utils.tools import installing_middlewares
-from resources.utils.old.src.handlers import run_handlers
+from resources.utils.old.config import config
 
 
 async def startup_func(dp: Dispatcher):
@@ -34,7 +29,7 @@ async def startup_func(dp: Dispatcher):
 
 
 if __name__ == '__main__':
-    # Set Logging
+    # Logging:
     bot_logging.set_logging(config.debug)
 
     executor.start_polling(dp, loop=loop, on_startup=startup_func)
