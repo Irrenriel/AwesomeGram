@@ -1,0 +1,1 @@
+{{ header }}from .{{ name }} import {{ name }}_func, trigger_to_{{ name }}_button

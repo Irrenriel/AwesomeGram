@@ -1,0 +1,5 @@
+{{ header }}from aiogram.dispatcher.filters.state import StatesGroup, State
+
+
+class {{ name.title() }}States(StatesGroup):
+    First = State()

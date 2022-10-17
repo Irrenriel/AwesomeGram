@@ -1,0 +1,37 @@
+import logging
+
+from aiogram.types import Message, CallbackQuery, InlineQuery
+from aiogram.dispatcher.middlewares import BaseMiddleware
+
+
+class MainMiddleware(BaseMiddleware):
+    def __init__(self):
+        super(MainMiddleware, self).__init__()
+        self.pattern = '[New Update] > Update Type: {update} > From ID: {id} > Content: {content}'
+
+    async def on_process_message(self, message: Message, data: dict):
+        logging.info(
+            self.pattern.format(
+                update='Message',
+                id=str(message.from_user.id),
+                content=message.text or str(message)
+            )
+        )
+
+    async def on_process_callback_query(self, callback_query: CallbackQuery, data: dict):
+        logging.info(
+            self.pattern.format(
+                update='CallbackQuery',
+                id=str(callback_query.from_user.id),
+                content=callback_query.data
+            )
+        )
+
+    async def on_process_inline_query(self, inline_query: InlineQuery, data: dict):
+        logging.info(
+            self.pattern.format(
+                update='InlineQuery',
+                id=str(inline_query.from_user.id),
+                content=inline_query.query
+            )
+        )
