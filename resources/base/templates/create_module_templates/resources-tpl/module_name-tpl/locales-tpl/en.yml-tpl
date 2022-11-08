@@ -1,0 +1,7 @@
+texts:
+    {{ name }}: |-
+        [✅] {{ name }} module test text!
+
+buttons:
+    {{ name }}: |-
+        {{ name.title() }} {menu}
