@@ -1,0 +1,50 @@
+{{ header -}}
+import asyncio
+from logging import info
+from pathlib import Path
+
+from aiogram import executor, Dispatcher, Bot
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from modules.handlers import register_handlers
+from modules.middlewares import installing_middlewares
+from modules.config import config
+from resources.utils.localizator import LocaleManager as LM
+from resources.utils.logging import GeneralLogger as GL
+
+
+# Main variables:
+loop = asyncio.get_event_loop()
+bot = Bot(token=config.BOT_TOKEN, loop=loop, parse_mode=config.PARSE_MODE)
+dp = Dispatcher(bot, storage=MemoryStorage(), loop=loop)
+path = Path(__file__).parent
+
+
+async def startup_func(dp: Dispatcher):
+    info('= = = Starting a bot! = = =')
+    info(f'Current App version: {config.APP_VERSION}')
+
+    # Skip updates:
+    await dp.skip_updates()
+
+    # Register handlers:
+    await register_handlers(dp)
+
+    info('= = = = = = = = =')
+
+    # Installing Middlewares:
+    await installing_middlewares(dp)
+
+    # Installing LocaleManager:
+    LM.set_default_locale('en')
+    LM.initialize_new_locales(path)
+
+    info('= = = Bot is working! = = =')
+
+
+if __name__ == '__main__':
+    # Logging:
+    GL.register_logging('console.log', config.debug)
+
+    # Bot Polling:
+    executor.start_polling(dp, loop=loop, on_startup=startup_func)

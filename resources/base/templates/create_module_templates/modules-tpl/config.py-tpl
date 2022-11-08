@@ -1,0 +1,19 @@
+{{ header -}}
+from sys import argv
+
+from pydantic import BaseSettings
+
+
+class Config(BaseSettings):
+    # == Development Mode == #
+    debug: bool = "--debug" in argv
+
+    # == Base Variables == #
+    BOT_TOKEN: str = ''
+    PARSE_MODE: str = 'HTML'
+
+    # == Globale Variables == #
+    APP_VERSION = "1.0"
+
+
+config = Config()
