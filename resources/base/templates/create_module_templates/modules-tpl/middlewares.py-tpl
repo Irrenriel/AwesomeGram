@@ -3,7 +3,8 @@ from logging import info
 
 from aiogram import Dispatcher
 
-from resources.middlewares import ThrottleMiddleware, MainMiddleware
+from resources.middlewares.throttle_middleware import ThrottleMiddleware
+from resources.middlewares.main_middleware import MainMiddleware
 
 
 async def installing_middlewares(dp: Dispatcher):

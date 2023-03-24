@@ -6,7 +6,7 @@ from sys import argv
 
 from jinja2 import Environment, FileSystemLoader
 
-from resources.utils.base.exceptions import ModuleNameNotFound, InvalidModuleName
+from resources.base.exceptions import ModuleNameNotFound, InvalidModuleName
 
 
 class CreateModule:
@@ -33,7 +33,7 @@ class CreateModule:
         self._args_processing(name_index)
 
         self.path = path
-        self.template_path = self.path / "resources" / "utils" / "base" / "templates" / "create_module_templates"
+        self.template_path = self.path / "resources" / "base" / "templates" / "create_module_templates"
         self.template_module_name = 'module_name'
 
         self.modules_path = self.path / "modules"
@@ -55,10 +55,11 @@ class CreateModule:
                     ⊳ middlewares.py
                     ⊳ states.py
             ⊳ resources
+                ⊳ locales
                 ⊳ middlewares
+                    ⊳ __init__.py
                     ⊳ main_middleware.py
                     ⊳ throttle_middleware.py
-                ⊳ < module name >
 
         """
         self._creating_level(self.template_path, self.path)

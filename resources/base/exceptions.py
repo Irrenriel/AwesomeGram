@@ -7,8 +7,6 @@ __all__ = [
 class ManageError(Exception):
     """Base level exceptions raised when a manage.py errors."""
 
-    pass
-
 
 class ModuleNameNotFound(ManageError):
     def __init__(self):

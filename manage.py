@@ -1,9 +1,9 @@
+import logging
 from pathlib import Path
 from sys import argv
 
-from resources.utils.base.create_app import CreateApp
-from resources.utils.base.create_module import CreateModule
-from resources.utils.logging import GeneralLogger
+from resources.base import *
+from resources.utils._logging import GeneralLogger
 
 
 def main():
@@ -11,6 +11,7 @@ def main():
         tool = {
             '--create-module': CreateModule,  # Creating New Module
             '--create-app': CreateApp,  # Creating Startup App
+            '--help': Help,  # Help Menu
         }.get(arg)
 
         if tool is None:
@@ -18,6 +19,9 @@ def main():
 
         tool(Path(__file__).parent).on_process()
         break
+
+    else:
+        logging.warning("No available commands! Use 'python manage.py --help' to see commands!")
 
 
 if __name__ == '__main__':

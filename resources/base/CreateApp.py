@@ -4,13 +4,13 @@ import os
 
 from jinja2 import Environment, FileSystemLoader
 
-from resources.utils.base.exceptions import ModulesNotCreated
+from resources.base.exceptions import ModulesNotCreated
 
 
 class CreateApp:
     def __init__(self, path):
         self.path = path
-        self.template_path = self.path / "resources" / "utils" / "base" / "templates" / "create_app_templates"
+        self.template_path = self.path / "resources" / "base" / "templates" / "create_app_templates"
 
     def on_process(self):
         self._check_leveling()
