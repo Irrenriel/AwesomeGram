@@ -4,6 +4,8 @@ import logging
 from aiogram.types import Message, CallbackQuery, InlineQuery
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
+from resources.base import LocaleManager
+
 
 class MainMiddleware(BaseMiddleware):
     def __init__(self):
@@ -19,6 +21,10 @@ class MainMiddleware(BaseMiddleware):
             )
         )
 
+        # Data:
+        data['locales_manager'] = LocalesManager
+        data['locale'] = LocalesManager.get
+
     async def on_process_callback_query(self, callback_query: CallbackQuery, data: dict):
         logging.info(
             self.pattern.format(
@@ -28,6 +34,10 @@ class MainMiddleware(BaseMiddleware):
             )
         )
 
+        # Data:
+        data['locales_manager'] = LocalesManager
+        data['locale'] = LocalesManager.get
+
     async def on_process_inline_query(self, inline_query: InlineQuery, data: dict):
         logging.info(
             self.pattern.format(
@@ -36,3 +46,7 @@ class MainMiddleware(BaseMiddleware):
                 content=inline_query.query
             )
         )
+
+        # Data:
+        data['locales_manager'] = LocalesManager
+        data['locale'] = LocalesManager.get

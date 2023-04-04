@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 
 from jinja2 import Environment, FileSystemLoader
+from loguru import logger
 
 from resources.base.exceptions import ModulesNotCreated
 
@@ -20,7 +20,7 @@ class CreateApp:
         with open(self.path / 'app.py', mode='w', encoding='UTF-8') as f:
             f.write(tpl.render())
 
-        logging.info('Successfully created "app.py" file!')
+        logger.info('Successfully created "app.py" file!')
 
     def _check_leveling(self):
         levels_and_files = [

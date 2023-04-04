@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 from string import punctuation
 from sys import argv
 
 from jinja2 import Environment, FileSystemLoader
+from loguru import logger
 
 from resources.base.exceptions import ModuleNameNotFound, InvalidModuleName
 
@@ -26,7 +26,7 @@ class CreateModule:
             raise InvalidModuleName
 
         # Default values before args processing:
-        self.overwrite = False
+        self.overwrite = True
         self.linux_mode = True
         self.linux_header = f'# -*- coding: utf-8 -*-\n' if self.linux_mode else ''
 
@@ -65,7 +65,7 @@ class CreateModule:
         self._creating_level(self.template_path, self.path)
         self._creating_files(self.template_path, self.path)
 
-        logging.info(f'Successfully created module "{self.name}"!')
+        logger.info(f'Successfully created module "{self.name}"!')
 
     def _creating_level(self, tpl_path, src_path):
         for ent in os.listdir(tpl_path):
@@ -115,7 +115,7 @@ class CreateModule:
 
     def _args_processing(self, index):
         arg_keys = [
-            'overwrite'
+            'overwrite', 'linux'
         ]
 
         for arg in argv[index:]:

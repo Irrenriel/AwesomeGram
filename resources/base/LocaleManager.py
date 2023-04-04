@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
+
+from loguru import logger
 
 try:
     from yaml import CLoader as Loader, load
@@ -8,7 +9,7 @@ try:
 except ImportError:
     from yaml import Loader, load
 
-from resources.utils.exceptions import LangNotFound
+from resources.base.exceptions import LangNotFound
 
 
 class Locale:
@@ -20,7 +21,7 @@ class Locale:
             pattern_text = self.extract_groups(self.__values, key.split('.'))
 
         except KeyError as e:
-            logging.error(f'[LocalesManager] Can not find pattern by "{e.args[0]}" key in "{key}".')
+            logger.error(f'[LocalesManager] Can not find pattern by "{e.args[0]}" key in "{key}".')
             return key
 
         error_kwargs = []
@@ -37,7 +38,7 @@ class Locale:
                 continue
 
             if error_kwargs:
-                logging.error(f'[LocalesManager] Not enough arguments for "{result}": {", ".join(error_kwargs)}')
+                logger.error(f'[LocalesManager] Not enough arguments for "{result}": {", ".join(error_kwargs)}')
 
             return result
 
@@ -63,13 +64,13 @@ class LocalesManager:
         locales_path = path / cls._LOCALES_PATH
 
         if not os.path.exists(locales_path):
-            logging.error(f'[LocalesManager] No locales directory in resources folder!')
+            logger.error(f'[LocalesManager] No locales directory in resources folder!')
             return
 
         available_locales = [l for l in os.listdir(locales_path) if l.endswith('.yml')]
 
         if not available_locales:
-            logging.error(
+            logger.error(
                 f'[LocalesManager] There are no available locales in the directory for localization installation!'
             )
             return
@@ -81,10 +82,10 @@ class LocalesManager:
             lang = locale.replace('.yml', '', 1)
             cls._LOCALES[lang] = Locale(values)
 
-            logging.info(f'[LocalesManager] Localization "{locale}" installed successfully!')
+            logger.info(f'[LocalesManager] Localization "{locale}" installed successfully!')
 
         list_locales = ", ".join([f'"{i}"' for i in cls._LOCALES])
-        logging.info(f'[LocalesManager] Now available {len(cls._LOCALES)} locales: {list_locales}.')
+        logger.info(f'[LocalesManager] Now available {len(cls._LOCALES)} locales: {list_locales}.')
 
     @classmethod
     def get(cls, key: str, lang: str = default_locale, *args, **kwargs):

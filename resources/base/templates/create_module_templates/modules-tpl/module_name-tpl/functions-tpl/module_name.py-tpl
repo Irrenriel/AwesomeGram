@@ -2,7 +2,7 @@
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
-from modules.admin.keyboards import {{ name }}_static_kb, {{ name }}_dynamic_kb
+from modules.{{ name }}.keyboards import {{ name }}_static_kb, {{ name }}_dynamic_kb
 
 
 async def {{ name }}_func(mes: Message, state: FSMContext, locale):
@@ -15,7 +15,7 @@ async def {{ name }}_func(mes: Message, state: FSMContext, locale):
     await mes.answer(mes.text, reply=True, reply_markup=keyboard)
 
 
-async def trigger_to_{{ name }}_button(mes: Message, state: FSMContext):
+async def trigger_to_{{ name }}_button(mes: Message, state: FSMContext, locale):
     """
     Description: Answering on button
     """
