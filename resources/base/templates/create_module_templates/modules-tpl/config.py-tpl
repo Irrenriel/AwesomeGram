@@ -5,15 +5,19 @@ from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
-    # == Development Mode == #
-    debug: bool = "--debug" in argv
+    # == Development == #
+    APP_VERSION = "1.0"  # Version control for development
+    DEBUG: bool = "--debug" in argv  # Free flag
 
     # == Base Variables == #
-    BOT_TOKEN: str = ''
-    PARSE_MODE: str = 'HTML'
+    BOT_TOKEN: str = ''  # See doc: https://core.telegram.org/bots/features#creating-a-new-bot
+    PARSE_MODE: str = 'HTML'  # See doc: https://docs.aiogram.dev/en/dev-3.x/api/enums/parse_mode.html
 
-    # == Globale Variables == #
-    APP_VERSION = "1.0"
+    # == SQLAlchemy Variables == #
+    DB_CONNECT: str = ""  # See doc: https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
+
+    # == Global Variables == #
+    ...
 
 
 config = Config()

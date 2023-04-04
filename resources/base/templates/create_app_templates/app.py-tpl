@@ -9,8 +9,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from modules.handlers import register_handlers
 from modules.middlewares import installing_middlewares
 from modules.config import config
-from resources.utils.localizator import LocaleManager as LM
-from resources.utils.logging import GeneralLogger as GL
+from resources.utils.localizator import LocalesManager
+from resources.utils.logging import GeneralLogger
 
 
 # Main variables:
@@ -36,15 +36,15 @@ async def startup_func(dp: Dispatcher):
     await installing_middlewares(dp)
 
     # Installing LocaleManager:
-    LM.set_default_locale('en')
-    LM.initialize_new_locales(path)
+    LocalesManager.default_locale = 'en'
+    LocalesManager.init(path)
 
     info('= = = Bot is working! = = =')
 
 
 if __name__ == '__main__':
     # Logging:
-    GL.register_logging('console.log', config.debug)
+    GeneralLogger.register_logging('console.log', config.debug)
 
     # Bot Polling:
     executor.start_polling(dp, loop=loop, on_startup=startup_func)

@@ -2,24 +2,23 @@
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
-from resources.utils.keyboards import ReplyKeyboard
-from resources.utils.localizator import LocaleManager as LM
+from modules.{{ name }}.keyboards import {{ name }}_static_kb, {{ name }}_dynamic_kb
 
 
-async def {{ name }}_func(mes: Message, state: FSMContext):
+async def {{ name }}_func(mes: Message, state: FSMContext, locale):
     """
     Description: Echo bot function.
     """
-    button = LM.get('buttons.{{ name }}', menu='Menu')
-    keyboard = ReplyKeyboard(button)
+    button = locale('buttons.test_button', menu='Menu')
+    keyboard = {{ name }}_dynamic_kb(button, row_width=1)
 
     await mes.answer(mes.text, reply=True, reply_markup=keyboard)
 
 
-async def trigger_to_{{ name }}_button(mes: Message, state: FSMContext):
+async def trigger_to_{{ name }}_button(mes: Message, state: FSMContext, locale):
     """
     Description: Answering on button
     """
-    text = LM.get('texts.{{ name }}', lang='en')
+    text = locale('texts.test_text')
 
-    await mes.answer(text)
+    await mes.answer(text, reply_markup={{ name }}_static_kb)

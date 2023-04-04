@@ -1,4 +1,0 @@
-{{ header -}}
-{% for m in modules -%}
-from {{ m }}.states import {{ m.title() }}States
-{% endfor %}

@@ -1,16 +1,24 @@
 from pathlib import Path
 from sys import argv
 
-from resources.utils.base.create_app import CreateApp
-from resources.utils.base.create_module import CreateModule
-from resources.utils.logging import GeneralLogger
+from loguru import logger
+
+from resources.base import *
+from resources.tools import *
 
 
 def main():
     for i, arg in enumerate(argv):
         tool = {
+            # Base:
+            '--help': Help,  # Help Menu
             '--create-module': CreateModule,  # Creating New Module
             '--create-app': CreateApp,  # Creating Startup App
+
+            # Tools:
+            '--init-db': InitDatabase  # Initiating SQLAlchemy database connection
+
+            # Other tools:
         }.get(arg)
 
         if tool is None:
@@ -19,7 +27,10 @@ def main():
         tool(Path(__file__).parent).on_process()
         break
 
+    else:
+        logger.warning("No available commands! Use 'python manage.py --help' to see commands!")
+
 
 if __name__ == '__main__':
-    GeneralLogger.register_logging('manage.log', debug=True)
+    logger.add('/logs/manage.log')
     main()
