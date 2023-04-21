@@ -27,6 +27,7 @@ class InitDatabase:
 
         self.path = path
         self.core_path = self.path / "core"
+        self.database_core_path = self.core_path / "database"
         self.template_path = self.path / "resources" / "tools" / "templates" / "init_database_templates"
 
     def on_process(self):
@@ -37,16 +38,20 @@ class InitDatabase:
         if not hasattr(config, self.db_connect):
             raise DBConnectUrlNotFound(self.db_connect)
 
-        file = os.path.isfile(self.core_path / self.db_file)
+        file = os.path.isfile(self.database_core_path / self.db_file)
 
         if not file or (file and self.overwrite):
             if not os.path.exists(self.core_path):
                 os.mkdir(self.core_path)
                 logger.info('Successfully created "core" folder!')
 
+            if not os.path.exists(self.database_core_path):
+                os.mkdir(self.database_core_path)
+                logger.info('Successfully created "core/database" folder!')
+
             tpl = Environment(loader=FileSystemLoader(self.template_path)).get_template('db.py-tpl')
 
-            with open(self.core_path / self.db_file, mode='w', encoding='UTF-8') as f:
+            with open(self.database_core_path / self.db_file, mode='w', encoding='UTF-8') as f:
                 f.write(tpl.render(**self.data))
 
             if file:

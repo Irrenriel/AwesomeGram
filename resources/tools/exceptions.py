@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 __all__ = [
-
+    'DBConnectUrlNotFound'
 ]
 
 
 class ToolsError(Exception):
     """ Tools group level exceptions. """
+
 
 class DBConnectUrlNotFound(ToolsError):
     def __init__(self, name: str):
