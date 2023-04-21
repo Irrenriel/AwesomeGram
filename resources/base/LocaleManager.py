@@ -95,6 +95,6 @@ class LocalesManager:
             if lang == cls.default_locale:
                 raise LangNotFound
 
-            return cls.get(cls.default_locale, key, *args, **kwargs)
+            return cls.get(key, lang=cls.default_locale, *args, **kwargs)
 
         return locale(key, *args, **kwargs)
