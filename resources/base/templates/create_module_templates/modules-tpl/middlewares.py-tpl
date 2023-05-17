@@ -1,7 +1,6 @@
 {{ header -}}
-from logging import info
-
 from aiogram import Dispatcher
+from loguru import logger
 
 from resources.middlewares.throttle_middleware import ThrottleMiddleware
 from resources.middlewares.main_middleware import MainMiddleware
@@ -9,7 +8,7 @@ from resources.middlewares.main_middleware import MainMiddleware
 
 async def installing_middlewares(dp: Dispatcher):
     dp.middleware.setup(ThrottleMiddleware())
-    info('▻ ThrottleMiddleware is setup!')
+    logger.info('▻ ThrottleMiddleware is setup!')
 
     dp.middleware.setup(MainMiddleware())
-    info('▻ Middleware is setup!')
+    logger.info('▻ Middleware is setup!')

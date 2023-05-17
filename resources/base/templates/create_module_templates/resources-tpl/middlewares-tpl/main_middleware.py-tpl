@@ -4,7 +4,7 @@ import logging
 from aiogram.types import Message, CallbackQuery, InlineQuery
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from resources.base import LocaleManager
+from resources.base import LocalesManager
 
 
 class MainMiddleware(BaseMiddleware):
