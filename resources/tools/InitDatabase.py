@@ -8,11 +8,12 @@ from sys import argv
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
-from resources.base.core import ManageTool, DirectoriesAndFilesChecking
+from resources.base.core import DirectoriesAndFilesChecking
+from resources.tools.core import CustomTool
 from resources.tools.exceptions import DBConnectUrlNotFound, InvalidDatabaseName
 
 
-class InitDatabase(ManageTool):
+class InitDatabase(CustomTool):
     def __init__(self, path: WindowsPath):
         name_index = argv.index('--init-db') + 1
         super().__init__(path)
