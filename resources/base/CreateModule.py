@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 import os
+from pathlib import WindowsPath
 from string import punctuation
 from sys import argv
 
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
-from resources.base.exceptions import ModuleNameNotFound, InvalidModuleName
+from resources.base.core import ManageTool
+from resources.base.exceptions import InvalidModuleName
 
 
-class CreateModule:
-    def __init__(self, path):
-        index = argv.index('--create-module')
-        name_index = index + 1
+class CreateModule(ManageTool):
+    template_module_name = 'module_name'
 
-        if name_index >= len(argv):
-            raise ModuleNameNotFound
+    def __init__(self, path: WindowsPath):
+        name_index = argv.index('--create-module') + 1
+        super().__init__(path, name_index)
 
         self.name = argv[name_index].lower()
 
@@ -24,19 +25,6 @@ class CreateModule:
 
         if len(self.name) > 64:
             raise InvalidModuleName
-
-        # Default values before args processing:
-        self.overwrite = True
-        self.linux_mode = True
-        self.linux_header = f'# -*- coding: utf-8 -*-\n' if self.linux_mode else ''
-
-        self._args_processing(name_index)
-
-        self.path = path
-        self.template_path = self.path / "resources" / "base" / "templates" / "create_module_templates"
-        self.template_module_name = 'module_name'
-
-        self.modules_path = self.path / "modules"
 
     def on_process(self):
         """
@@ -62,8 +50,11 @@ class CreateModule:
                     ⊳ throttle_middleware.py
 
         """
-        self._creating_level(self.template_path, self.path)
-        self._creating_files(self.template_path, self.path)
+        # Paths
+        template_path = self.path / "resources" / "base" / "templates" / "create_module_templates"
+
+        self._creating_level(template_path, self.path)
+        self._creating_files(template_path, self.path)
 
         logger.info(f'Successfully created module "{self.name}"!')
 
@@ -113,43 +104,10 @@ class CreateModule:
 
         return clean
 
-    def _args_processing(self, index):
-        arg_keys = [
-            'overwrite', 'linux'
-        ]
-
-        for arg in argv[index:]:
-            if '=' not in arg:
-                continue
-
-            args = arg.split('=')
-
-            if len(args) != 2:
-                continue
-
-            k, v = [i.lower() for i in args]
-
-            if k not in arg_keys:
-                continue
-
-            # Overwriting:
-            if k == 'overwrite':
-                if v not in ['true', 'false', '1', '0']:
-                    continue
-
-                self.overwrite = True if v in ['true', '1'] else False
-
-            # Linux Encoding:
-            if k == 'linux':
-                if v not in ['true', 'false', '1', '0']:
-                    continue
-
-                self.linux_mode = True if v in ['true', '1'] else False
-
     @property
     def data(self):
         return {
             'header': self.linux_header,
             'name': self.name,
-            'modules': [i for i in os.listdir(self.modules_path) if '.' not in i and i != 'middlewares']
+            'modules': [i for i in os.listdir(self.path / "modules") if '.' not in i and i != 'middlewares']
         }

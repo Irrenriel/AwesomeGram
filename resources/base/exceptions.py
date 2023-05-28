@@ -26,5 +26,6 @@ class ModulesNotCreated(BaseError):
         msg += ' Please, create module with module creator. (manage.py --create-module <module_name>)'
         super().__init__(msg)
 
+
 class LangNotFound(BaseError):
     """ Lang not found """
