@@ -1,6 +1,5 @@
 {{ header -}}
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Text
+from aiogram import Dispatcher, F
 
 from modules.{{ name }}.functions import {{ name }}_func, trigger_to_{{ name }}_button
 
@@ -15,22 +14,21 @@ async def register_{{ name }}_handlers(dp: Dispatcher):
 
     ↓       ↓       ↓       ↓       ↓
 
-    from aiogram.dispatcher.filters import Command, ChatTypeFilter
-    from aiogram.types import ChatType
+    from aiogram import Dispatcher, F, filters
 
-    dp.register_..._handler(
+    dp.<event_type>.register(
         trigger_func, ← the function to run
-        Command('start'), ChatTypeFilter(ChatType.PRIVATE), ← the initialization of filters
+        filters.CommandStart(), F.chat.type == 'private', ← the initialization of filters
         state='*' ← an indication of the state
         # State: '*' -> StateOn.Example (by if) ← and state variability
     )
 
     """
-    dp.register_message_handler(
+    dp.message.register(
         trigger_to_{{ name }}_button,
-        Text('{{ name.title() }} Menu')
+        F.text == '{{ name.title() }} Menu'
     )
 
-    dp.register_message_handler(
+    dp.message.register(
         {{ name }}_func
     )

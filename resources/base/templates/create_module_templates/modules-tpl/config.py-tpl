@@ -1,10 +1,10 @@
 {{ header -}}
 from sys import argv
 
-from pydantic import BaseSettings
+from pydantic import BaseConfig
 
 
-class Config(BaseSettings):
+class Config(BaseConfig):
     # == Development == #
     APP_VERSION = "1.0"                 # Version control for development
     DEBUG: bool = "--debug" in argv     # Free flag

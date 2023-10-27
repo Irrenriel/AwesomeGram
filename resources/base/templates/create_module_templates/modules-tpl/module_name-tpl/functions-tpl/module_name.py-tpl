@@ -1,11 +1,11 @@
 {{ header -}}
-from aiogram.types import Message
-from aiogram.dispatcher import FSMContext
+from aiogram import types
+from aiogram.fsm.context import FSMContext
 
 from modules.{{ name }}.keyboards import {{ name }}_static_kb, {{ name }}_dynamic_kb
 
 
-async def {{ name }}_func(mes: Message, state: FSMContext, locale):
+async def {{ name }}_func(mes: types.Message, state: fsm.context.FSMContext, locale):
     """
     Description: Echo bot function.
     """
@@ -15,7 +15,7 @@ async def {{ name }}_func(mes: Message, state: FSMContext, locale):
     await mes.answer(mes.text, reply=True, reply_markup=keyboard)
 
 
-async def trigger_to_{{ name }}_button(mes: Message, state: FSMContext, locale):
+async def trigger_to_{{ name }}_button(mes: types.Message, state: fsm.context.FSMContext, locale):
     """
     Description: Answering on button
     """

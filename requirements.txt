@@ -1,6 +1,5 @@
-pydantic==1.10.12
+pydantic==2.3.0
 gino==1.0.1
-sqlalchemy==2.0.22
 psycopg2-binary==2.9.9
 Jinja2==3.1.2
 PyYAML==6.0.1
