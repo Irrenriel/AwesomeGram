@@ -3,9 +3,14 @@ from aiogram.types import ReplyKeyboardMarkup as RKM
 
 
 # Static keyboards:
-{{ name }}_static_kb = RKM(row_width=2).add("First button", "Second button")
+{{ name }}_static_kb = RKM(
+    keyboard=[
+        [KB(text="First button")],
+        [KB(text="Second button")]
+    ]
+)
 
 
 # Dynamic keyboards:
 def {{ name }}_dynamic_kb(*buttons, row_width: int = 3):
-    return RKM(row_width=row_width).add(*buttons)
+    return RKM(keyboard=[[KB(text=b) for b in buttons[i:i + row_width]] for i in range(0, len(buttons), row_width)])

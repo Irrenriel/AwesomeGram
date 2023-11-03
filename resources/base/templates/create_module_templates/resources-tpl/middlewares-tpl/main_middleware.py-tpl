@@ -1,23 +1,26 @@
 {{ header -}}
-import logging
+from typing import Callable, Awaitable, Dict, Any, Union
 
-from aiogram.types import Message, CallbackQuery, InlineQuery
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import types, BaseMiddleware
+from loguru import logger
 
 from resources.base import LocalesManager
 
 
 class MainMiddleware(BaseMiddleware):
-    def __init__(self):
-        super(MainMiddleware, self).__init__()
-        self.pattern = '[New Update] > Update Type: {update} > From ID: {id} > Content: {content}'
+    _PATTERN = '[New Update] > Update Type: {update} > From ID: {id} > Content: {content}'
 
-    async def on_process_message(self, message: Message, data: dict):
-        logging.info(
-            self.pattern.format(
-                update='Message',
-                id=str(message.from_user.id),
-                content=message.text or str(message)
+    async def __call__(
+            self,
+            handler: Callable[[types.Message, Dict[str, Any]], Awaitable[Any]],
+            event: Union[types.Message, types.CallbackQuery, types.InlineQuery],
+            data: Dict[str, Any]
+    ) -> Any:
+        logger.info(
+            self._PATTERN.format(
+                update=event.__class__.__name__,
+                id=str(event.from_user.id),
+                content=self._get_content(event)
             )
         )
 
@@ -25,28 +28,82 @@ class MainMiddleware(BaseMiddleware):
         data['locales_manager'] = LocalesManager
         data['locale'] = LocalesManager.get
 
-    async def on_process_callback_query(self, callback_query: CallbackQuery, data: dict):
-        logging.info(
-            self.pattern.format(
-                update='CallbackQuery',
-                id=str(callback_query.from_user.id),
-                content=callback_query.data
-            )
-        )
+        return await handler(event, data)
 
-        # Data:
-        data['locales_manager'] = LocalesManager
-        data['locale'] = LocalesManager.get
+    @staticmethod
+    def _get_content(event: Union[types.Message, types.CallbackQuery, types.InlineQuery]) -> str:
+        if isinstance(event, types.Message):
+            return event.text or str(event)
 
-    async def on_process_inline_query(self, inline_query: InlineQuery, data: dict):
-        logging.info(
-            self.pattern.format(
-                update='InlineQuery',
-                id=str(inline_query.from_user.id),
-                content=inline_query.query
-            )
-        )
+        elif isinstance(event, types.CallbackQuery):
+            return event.data
 
-        # Data:
-        data['locales_manager'] = LocalesManager
-        data['locale'] = LocalesManager.get
+        elif isinstance(event, types.InlineQuery):
+            return event.query
+
+        else:
+            return "Undefined"
+
+
+class AiogramTTLCache:
+    _rlock = RLock()
+
+    def __init__(self, **ttl):
+        self.ttl = ttl
+        self.cache = {}
+        self.default = datetime(2000, 1, 1)
+
+    def get(self, *, message: types.Message = None, chat: Union[str, int] = None, user: Union[str, int] = None):
+        with AiogramTTLCache._rlock:
+            if message is not None:
+                chat, user = message.chat.id, message.from_user.id
+
+            chat, user = self.check_input(chat=chat, user=user)
+            ttl = self.cache.get(chat, {}).get(user, self.default)
+
+            if datetime.now() < ttl:
+                return True
+
+            self.cache.get(chat, {}).pop(user, None)
+            return False
+
+    def set(self, *, message: types.Message = None, chat: Union[str, int] = None, user: Union[str, int] = None, **ttl):
+        with AiogramTTLCache._rlock:
+            if message is not None:
+                chat, user = message.chat.id, message.from_user.id
+
+            chat, user = self.check_input(chat=chat, user=user)
+            delta_ttl = ttl or self.ttl
+
+            if not delta_ttl:
+                raise Exception("where ttl?????")
+
+            time = datetime.now() + timedelta(**delta_ttl)
+            self.cache.setdefault(chat, {}).setdefault(user, time)
+
+    def left(
+            self, *, message: types.Message = None, chat: Union[str, int] = None, user: Union[str, int] = None
+    ) -> timedelta:
+        with AiogramTTLCache._rlock:
+            if message is not None:
+                chat, user = message.chat.id, message.from_user.id
+
+            chat, user = self.check_input(chat=chat, user=user)
+
+            if self.get(chat=chat, user=user):
+                return self.cache.get(chat).get(user) - datetime.now()
+
+            return timedelta()
+
+    @staticmethod
+    def check_input(chat: Union[str, int], user: Union[str, int]):
+        if chat is None and user is None:
+            raise ValueError('`user` or `chat` parameter is required but no one is provided!')
+
+        if user is None and chat is not None:
+            user = chat
+
+        elif user is not None and chat is None:
+            chat = user
+
+        return str(chat), str(user)
