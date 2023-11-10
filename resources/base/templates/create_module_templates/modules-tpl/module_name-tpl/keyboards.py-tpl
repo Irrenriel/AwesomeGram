@@ -1,5 +1,5 @@
 {{ header -}}
-from aiogram.types import ReplyKeyboardMarkup as RKM
+from aiogram.types import ReplyKeyboardMarkup as RKM, KeyboardButton as KB
 
 
 # Static keyboards:
