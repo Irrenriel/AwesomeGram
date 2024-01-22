@@ -1,0 +1,7 @@
+text:
+    test_text: |-
+        TestText
+
+button:
+    test_button: |-
+        TestButton

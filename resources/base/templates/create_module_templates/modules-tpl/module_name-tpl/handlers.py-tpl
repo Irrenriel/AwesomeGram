@@ -1,10 +1,10 @@
 {{ header -}}
 from aiogram import Dispatcher, F
 
-from modules.{{ name }}.functions import {{ name }}_func, trigger_to_{{ name }}_button
+from modules.{{ name }}.functions import {{ name }}_func, trigger_to_{{ name }}_button_func
 
 
-async def register_{{ name }}_handlers(dp: Dispatcher):
+async def install_{{ name }}_handlers(dp: Dispatcher, LM: 'LocalesManager'):
     """
     For comfortable writing handlers, you should follow the format:
 
@@ -26,7 +26,7 @@ async def register_{{ name }}_handlers(dp: Dispatcher):
     """
     dp.message.register(
         trigger_to_{{ name }}_button,
-        F.text == '{{ name.title() }} Menu'
+        LM.handler_buttons('test_button')
     )
 
     dp.message.register(

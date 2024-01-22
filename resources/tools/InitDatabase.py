@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from importlib import import_module
-from pathlib import WindowsPath
+from pathlib import Path
 from string import punctuation
 from sys import argv
 
@@ -14,7 +14,7 @@ from resources.tools.exceptions import DBConnectUrlNotFound, InvalidDatabaseName
 
 
 class InitDatabase(CustomTool):
-    def __init__(self, path: WindowsPath):
+    def __init__(self, path: Path):
         name_index = argv.index('--init-db') + 1
         super().__init__(path)
 

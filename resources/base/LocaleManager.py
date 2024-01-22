@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from typing import Union
 
 from loguru import logger
 
@@ -64,14 +65,14 @@ class LocalesManager:
         locales_path = path / cls._LOCALES_PATH
 
         if not os.path.exists(locales_path):
-            logger.error(f'No locales directory in resources folder!')
+            logger.error('No locales directory in resources folder!')
             return
 
         available_locales = [l for l in os.listdir(locales_path) if l.endswith('.yml')]
 
         if not available_locales:
             logger.error(
-                f'There are no available locales in the directory for localization installation!'
+                'There are no available locales in the directory for localization installation!'
             )
             return
 
@@ -80,7 +81,7 @@ class LocalesManager:
                 values = load(f, Loader)
 
             lang = locale.replace('.yml', '', 1)
-            cls._LOCALES[lang] = Locale(values)
+            cls._LOCALES[lang.upper()] = Locale(values)
 
             logger.info(f'Localization "{locale}" installed successfully!')
 
@@ -88,7 +89,7 @@ class LocalesManager:
         logger.info(f'Now available {len(cls._LOCALES)} locales: {list_locales}.')
 
     @classmethod
-    def get(cls, key: str, lang: str = default_locale, *args, **kwargs):
+    def get(cls, key: str, lang: str = default_locale, *args, **kwargs) -> str:
         locale = cls._LOCALES.get(lang)
 
         if not locale:
@@ -98,3 +99,11 @@ class LocalesManager:
             return cls.get(key, lang=cls.default_locale, *args, **kwargs)
 
         return locale(key, *args, **kwargs)
+
+    @classmethod
+    def text(cls, key: str, lang: str = default_locale, *args, **kwargs) -> str:
+        return cls.get(f'text.{key}', lang, *args, **kwargs)
+
+    @classmethod
+    def button(cls, key: str, lang: str = default_locale, *args, **kwargs) -> str:
+        return cls.get(f'button.{key}', lang, *args, **kwargs)

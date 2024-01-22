@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from abc import ABC
-from pathlib import WindowsPath
+from pathlib import Path
 from sys import argv
 from typing import Optional
 
@@ -13,7 +13,7 @@ class ManageTool(AbstractTool, ABC):
     linux_mode = True
     linux_header = f'# -*- coding: utf-8 -*-\n'
 
-    def __init__(self, path: WindowsPath, name_index: Optional[int] = None):
+    def __init__(self, path: Path, name_index: Optional[int] = None):
         self.path = path
 
         if name_index is None:

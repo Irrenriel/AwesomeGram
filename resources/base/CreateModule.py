@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from pathlib import WindowsPath
+from pathlib import Path
 from string import punctuation
 from sys import argv
 
@@ -14,7 +14,7 @@ from resources.base.exceptions import InvalidModuleName
 class CreateModule(ManageTool):
     template_module_name = 'module_name'
 
-    def __init__(self, path: WindowsPath):
+    def __init__(self, path: Path):
         name_index = argv.index('--create-module') + 1
         super().__init__(path, name_index)
 

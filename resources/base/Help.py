@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pathlib import WindowsPath
+from pathlib import Path
 
 from loguru import logger
 
@@ -15,7 +15,7 @@ Available commands to use:
 
 
 class Help(AbstractTool):
-    def __init__(self, path: WindowsPath):
+    def __init__(self, path: Path):
         pass
 
     def on_process(self):

@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+from aiogram import Dispatcher
+from loguru import logger
+
+{% for m in modules -%}
+from modules.{{ m }}.handlers import install_{{ m }}_handlers
+{% endfor %}
+from resources.middlewares import MainMiddleware
+
+
+async def startup_installing(dp: Dispatcher, LM: 'LocalesManager'):
+    logger.info('▻ Installing handlers and middlewares...')
+
+    # Handlers:{% for m in modules %}
+    await install_{{ m }}_handlers(dp, LM)
+    logger.info('▻ {{ m.upper() }} handlers was successful installed!')
+{% endfor %}
+    # Middlewares:
+    dp.message.middleware(MainMiddleware())
+    dp.callback_query.middleware(MainMiddleware())
+    logger.info('▻ MainMiddleware was successful installed!')

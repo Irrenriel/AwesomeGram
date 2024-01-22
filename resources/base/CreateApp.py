@@ -10,9 +10,8 @@ class CreateApp(ManageTool):
         DirectoriesAndFilesChecking(
             [
                 self.path / 'modules',
-                self.path / 'modules' / 'handlers.py',
-                self.path / 'modules' / 'middlewares.py',
-                self.path / 'modules' / 'config.py'
+                self.path / 'modules' / 'config.py',
+                self.path / 'modules' / 'installing.py'
             ]
         )
 
