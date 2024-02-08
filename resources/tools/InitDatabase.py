@@ -14,65 +14,80 @@ from resources.tools.exceptions import DBConnectUrlNotFound, InvalidDatabaseName
 
 
 class InitDatabase(CustomTool):
+    __db_name = None
+
     def __init__(self, path: Path):
-        name_index = argv.index('--init-db') + 1
         super().__init__(path)
 
-        self.db_name = 'db' if name_index >= len(argv) else argv[name_index].lower()
-
-        if any([ch in self.db_name for ch in punctuation]):
+        if any([ch in self._db_name for ch in punctuation]):
             raise InvalidDatabaseName
 
-        if len(self.db_name) > 64:
+        if len(self._db_name) > 64:
             raise InvalidDatabaseName
 
-        self.db_connect = f'{self.db_name.upper()}_CONNECT'
-        self.db_file = f"{self.db_name}.py"
+        self.db_connect = f'{self._db_name.upper()}_CONNECT'
+        self.db_file = f"{self._db_name}.py"
+        self.config = None
 
     def on_process(self):
+        """
+        Creating step by step structure:
+
+        < ROOT >
+            ⊳ core
+                ⊳ database
+                    ⊳ db.py
+            ⊳ resources
+                ⊳ models
+                    ⊳ enums
+                        ⊳ __init__.py
+                        ⊳ languages.py
+                    ⊳ tables
+                        ⊳ __init__.py
+                        ⊳ users.py
+
+        """
         DirectoriesAndFilesChecking(
             [
                 self.path / 'modules',
+                self.path / 'resources',
                 self.path / 'modules' / 'config.py'
             ]
         )
 
-        core_path = self.path / "core"
-        database_core_path = core_path / "database"
-        template_path = self.path / "resources" / "tools" / "templates" / "init_database_templates"
+        self._check_config()
 
-        config = getattr(import_module('modules.config'), "config")
+        async_mode = 'async_' if self.async_mode else ''
+        template_path = self.path / "resources" / "tools" / "templates" / f"{async_mode}init_database_templates"
 
-        if not hasattr(config, self.db_connect):
-            raise DBConnectUrlNotFound(self.db_connect)
+        self._creating_level(template_path, self.path)
+        self._creating_files(template_path, self.path)
 
-        file = os.path.isfile(database_core_path / self.db_file)
-
-        if not file or (file and self.overwrite):
-            if not os.path.exists(core_path):
-                os.mkdir(core_path)
-                logger.info('Successfully created "core" folder!')
-
-            if not os.path.exists(database_core_path):
-                os.mkdir(database_core_path)
-                logger.info('Successfully created "core/database" folder!')
-
-            tpl = Environment(loader=FileSystemLoader(template_path)).get_template('db.py-tpl')
-
-            with open(database_core_path / self.db_file, mode='w', encoding='UTF-8') as f:
-                f.write(tpl.render(**self.data))
-
-            if file:
-                logger.info(f'Successfully initiated database with overwrite "{self.db_file}" file!')
-
-            else:
-                logger.info(f'Successfully initiated database with "{self.db_file}" file!')
-
-        else:
-            logger.info(f'Failed initiating database with "{self.db_file}" file! Already exist!')
+        logger.info(f'Successfully initiated database with "{self.db_file}" file!')
 
     @property
-    def data(self):
+    def _db_name(self):
+        if self.__db_name:
+            return self.__db_name
+
+        name_index = argv.index('--init-db') + 1
+
+        if name_index >= len(argv) or '=' in argv[name_index]:
+            self.__db_name = 'db'
+
+        else:
+            self.__db_name = argv[name_index].lower()
+
+        return self.__db_name
+
+    def _check_config(self):
+        self.config = getattr(import_module('modules.config'), "config")
+
+        if not hasattr(self.config, self.db_connect):
+            raise DBConnectUrlNotFound(self.db_connect)
+
+    @property
+    def _data(self):
         return {
             'header': self.linux_header,
             'connect_name': self.db_connect

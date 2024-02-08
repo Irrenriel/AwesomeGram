@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-from typing import Union
+from typing import Union, List
 
+from aiogram import F
 from loguru import logger
 
 try:
@@ -107,3 +108,7 @@ class LocalesManager:
     @classmethod
     def button(cls, key: str, lang: str = default_locale, *args, **kwargs) -> str:
         return cls.get(f'button.{key}', lang, *args, **kwargs)
+
+    @classmethod
+    def handler_buttons(cls, key: str) -> List[str]:
+        return F.text.in_([cls.button(key, lang) for lang in cls._LOCALES.keys()])

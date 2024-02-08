@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import os
 from abc import ABC
 from pathlib import Path
 from sys import argv
 from typing import Optional
 
+from jinja2 import Environment, FileSystemLoader
+
 from resources.base.core.AbstractTool import AbstractTool
-from resources.base.exceptions import ModuleNameNotFound
+from resources.base.exceptions import ArgumentValueNotFound
 
 
 class ManageTool(AbstractTool, ABC):
@@ -16,13 +19,10 @@ class ManageTool(AbstractTool, ABC):
     def __init__(self, path: Path, name_index: Optional[int] = None):
         self.path = path
 
-        if name_index is None:
-            return
+        if name_index and name_index >= len(argv):
+            raise ArgumentValueNotFound(argv[name_index])
 
-        if name_index >= len(argv):
-            raise ModuleNameNotFound
-
-        self._args_processing(name_index)
+        self._args_processing(name_index or 0)
 
     def _args_processing(self, index):
         arg_keys = ('overwrite', 'linux',)
@@ -56,3 +56,50 @@ class ManageTool(AbstractTool, ABC):
                 self.linux_mode = True if v in ['true', '1'] else False
 
             self.linux_header = f'# -*- coding: utf-8 -*-\n' if self.linux_mode else ''
+
+    def _creating_level(self, tpl_path, src_path):
+        for ent in os.listdir(tpl_path):
+            clean = self._clear_name(ent)
+
+            if not clean or '.' in ent:
+                continue
+
+            if not os.path.exists(src_path / clean):
+                os.makedirs(src_path / clean)
+
+            self._creating_level(tpl_path / ent, src_path / clean)
+
+    def _creating_files(self, tpl_path, src_path):
+        for ent in os.listdir(tpl_path):
+            clean = self._clear_name(ent)
+
+            if not clean:
+                continue
+
+            # Python files:
+            if clean.endswith('.py') or clean.endswith('.yml'):
+                if os.path.isfile(src_path / clean) and not self.overwrite:
+                    continue
+
+                tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
+
+                with open(src_path / clean, mode='w', encoding='UTF-8') as f:
+                    text = tpl.render(**self._data)
+                    f.write(text + ('' if text.endswith('\n') else '\n'))
+
+            elif '.' in ent:
+                continue
+
+            else:
+                self._creating_files(tpl_path / ent, src_path / clean)
+
+    @staticmethod
+    def _clear_name(ent):
+        if not ent.endswith('-tpl'):
+            return
+
+        return ent.replace('-tpl', '')
+
+    @property
+    def _data(self):
+        return {}

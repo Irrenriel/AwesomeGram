@@ -1,0 +1,39 @@
+{{ header -}}
+import traceback
+
+from loguru import logger
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session, DeclarativeBase
+from contextlib import contextmanager
+
+from modules.config import config
+
+
+Engine = create_engine(config.{{ connect_name }}, echo=config.DEBUG)
+SessionMaker = sessionmaker(autocommit=False, autoflush=False, bind=Engine, expire_on_commit=False)
+
+
+class Base(DeclarativeBase):
+    @classmethod
+    def execute(cls, expression, session: Session = None):
+        if session:
+            return session.execute(expression)
+
+        with Session() as session:
+            return session.execute(expression)
+
+
+@contextmanager
+def SessionContext() -> Session:
+    session = SessionMaker()
+
+    try:
+        yield session
+        session.commit()
+
+    except Exception:
+        session.rollback()
+        logger.error(traceback.format_exc())
+
+    finally:
+        session.close()

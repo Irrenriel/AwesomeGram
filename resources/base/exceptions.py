@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __all__ = [
-    'ModuleNameNotFound', 'InvalidModuleName', 'ModulesNotCreated', 'LangNotFound'
+    'ArgumentValueNotFound', 'InvalidModuleName', 'ModulesNotCreated', 'LangNotFound'
 ]
 
 
@@ -8,9 +8,9 @@ class BaseError(Exception):
     """ Base level exceptions raised when a manage.py errors. """
 
 
-class ModuleNameNotFound(BaseError):
-    def __init__(self):
-        msg = 'Module name not passed.'
+class ArgumentValueNotFound(BaseError):
+    def __init__(self, arg: str):
+        msg = f'Argument "{arg}" must be passed a value!'
         super().__init__(msg)
 
 

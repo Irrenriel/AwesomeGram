@@ -1,0 +1,39 @@
+{{ header -}}
+import traceback
+
+from loguru import logger
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from contextlib import asynccontextmanager
+
+from modules.config import config
+
+
+Engine = create_async_engine(config.{{ connect_name }}, echo=config.DEBUG)
+SessionMaker = sessionmaker(autocommit=False, autoflush=False, bind=Engine, expire_on_commit=False, class_=AsyncSession)
+
+
+class Base(DeclarativeBase):
+    @classmethod
+    async def execute(cls, expression, session: AsyncSession = None):
+        if session:
+            return await session.execute(expression)
+
+        async with AsyncSessionContext() as session:
+            return await session.execute(expression)
+
+
+@asynccontextmanager
+async def AsyncSessionContext() -> AsyncSession:
+    session = SessionMaker()
+
+    try:
+        yield session
+        await session.commit()
+
+    except Exception:
+        await session.rollback()
+        logger.error(traceback.format_exc())
+
+    finally:
+        await session.close()

@@ -20,6 +20,7 @@ class CreateApp(ManageTool):
         tpl = Environment(loader=FileSystemLoader(template_path)).get_template('app.py-tpl')
 
         with open(self.path / 'app.py', mode='w', encoding='UTF-8') as f:
-            f.write(tpl.render())
+            text = tpl.render()
+            f.write(text + ('' if text.endswith('\n') else '\n'))
 
         logger.info('Successfully created "app.py" file!')

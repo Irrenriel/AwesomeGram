@@ -4,7 +4,6 @@ from pathlib import Path
 from string import punctuation
 from sys import argv
 
-from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
 from resources.base.core import ManageTool
@@ -32,18 +31,19 @@ class CreateModule(ManageTool):
 
         < ROOT >
             ⊳ modules
-                ⊳ handlers.py (Handlers from all modules are imported here)
+                ⊳ config.py
+                ⊳ installing.py (Handlers & Middlewares from all modules are imported here)
                 ⊳ states.py (States from all modules are imported here)
                 ⊳ < module name >
                     ⊳ functions
                         ⊳ __init__.py
                         ⊳ < module name >.py
-                    ⊳ config.py
                     ⊳ handlers.py
-                    ⊳ middlewares.py
+                    ⊳ keyboards.py
                     ⊳ states.py
             ⊳ resources
                 ⊳ locales
+                    ⊳ en.yml
                 ⊳ middlewares
                     ⊳ __init__.py
                     ⊳ main_middleware.py
@@ -58,46 +58,14 @@ class CreateModule(ManageTool):
 
         logger.info(f'Successfully created module "{self.name}"!')
 
-    def _creating_level(self, tpl_path, src_path):
-        for ent in os.listdir(tpl_path):
-            clean = self._clear_name(ent)
-
-            if not clean or '.' in ent:
-                continue
-
-            if not os.path.exists(src_path / clean):
-                os.makedirs(src_path / clean)
-
-            self._creating_level(tpl_path / ent, src_path / clean)
-
-    def _creating_files(self, tpl_path, src_path):
-        for ent in os.listdir(tpl_path):
-            clean = self._clear_name(ent)
-
-            if not clean:
-                continue
-
-            # Python files:
-            if clean.endswith('.py') or clean.endswith('.yml'):
-                if os.path.isfile(src_path / clean) and not self.overwrite:
-                    continue
-
-                tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
-
-                with open(src_path / clean, mode='w', encoding='UTF-8') as f:
-                    f.write(tpl.render(**self.data))
-
-            elif '.' in ent:
-                continue
-
-            else:
-                self._creating_files(tpl_path / ent, src_path / clean)
-
-    def _clear_name(self, ent):
+    def _clear_name(self, ent: str):
         if not ent.endswith('-tpl'):
             return
 
         clean = ent.replace('-tpl', '')
+
+        if not self.template_module_name:
+            return clean
 
         if clean.startswith(self.template_module_name):
             clean = clean.replace(self.template_module_name, self.name)
@@ -105,7 +73,7 @@ class CreateModule(ManageTool):
         return clean
 
     @property
-    def data(self):
+    def _data(self):
         return {
             'header': self.linux_header,
             'name': self.name,
