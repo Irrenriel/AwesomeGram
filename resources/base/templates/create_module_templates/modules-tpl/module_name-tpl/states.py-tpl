@@ -2,5 +2,5 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class MainStates(StatesGroup):
+class {{ name.title() }}States(StatesGroup):
     First = State()

@@ -1,5 +1,5 @@
 {{ header -}}
-from aiogram import Dispatcher, F
+from aiogram import Dispatcher
 
 from modules.{{ name }}.functions import {{ name }}_func, trigger_to_{{ name }}_button_func
 
@@ -25,7 +25,7 @@ async def install_{{ name }}_handlers(dp: Dispatcher, LM: 'LocalesManager'):
 
     """
     dp.message.register(
-        trigger_to_{{ name }}_button,
+        trigger_to_{{ name }}_button_func,
         LM.handler_buttons('test_button')
     )
 

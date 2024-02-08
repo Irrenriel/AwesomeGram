@@ -33,8 +33,6 @@ class InitDatabase(CustomTool):
         DirectoriesAndFilesChecking(
             [
                 self.path / 'modules',
-                self.path / 'modules' / 'handlers.py',
-                self.path / 'modules' / 'middlewares.py',
                 self.path / 'modules' / 'config.py'
             ]
         )

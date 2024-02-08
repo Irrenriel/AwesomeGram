@@ -1,7 +1,12 @@
 from pathlib import Path
 from sys import argv
 
-from loguru import logger
+try:
+    from loguru import logger
+
+except ModuleNotFoundError:
+    print("Please install requirements!")
+    exit()
 
 from resources.base import *
 from resources.tools import *
@@ -32,5 +37,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logger.add('/logs/manage.log')
+    # logger.add('/logs/manage.log')
     main()
