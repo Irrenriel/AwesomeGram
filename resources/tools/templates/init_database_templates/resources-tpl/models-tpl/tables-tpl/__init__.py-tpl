@@ -1,25 +1,2 @@
 {{ header -}}
-from datetime import datetime
-
-from sqlalchemy import Column, BIGINT, TEXT, Enum, BOOLEAN, DateTime
-
-from core.database.db import Base
-from resources.models.enums import Languages
-
-
-class UserModel(Base):
-    __tablename__ = "users"
-
-    # Base Data:
-    uid = Column("uid", BIGINT, primary_key=True)
-    username = Column("username", TEXT, nullable=False)
-
-    # Settings Data:
-    language = Column("language", Enum(Languages), default=Languages.RU)
-    created_at = Column("created_at", DateTime, default=datetime.utcnow)
-    updated_at = Column("updated_at", DateTime, default=datetime.utcnow)
-
-    # Ban Data:
-    is_banned = Column("is_banned", BOOLEAN, default=False)
-    banned_at = Column("banned_at", DateTime, nullable=True)
-    banned_until = Column("banned_until", DateTime, nullable=True)
+from .user_model import UserModel

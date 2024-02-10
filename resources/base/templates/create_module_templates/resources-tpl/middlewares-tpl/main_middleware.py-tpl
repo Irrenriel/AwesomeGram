@@ -1,7 +1,9 @@
 {{ header -}}
+import asyncio
 from typing import Callable, Awaitable, Dict, Any, Union
 
 from aiogram import types, BaseMiddleware
+from aiogram.dispatcher.event.bases import CancelHandler
 from loguru import logger
 
 from resources.base import LocalesManager
@@ -9,6 +11,9 @@ from resources.base import LocalesManager
 
 class MainMiddleware(BaseMiddleware):
     _PATTERN = '[New Update] > Update Type: {update} > From ID: {id} > Content: {content}'
+
+    album_data: dict = {}
+    latency = 0.5
 
     async def __call__(
             self,
@@ -25,8 +30,44 @@ class MainMiddleware(BaseMiddleware):
         )
 
         # Data:
-        data['locales_manager'] = LocalesManager
         data['locale'] = LocalesManager.get
+        data['locales_manager'] = LocalesManager
+        data['text'] = LocalesManager.text
+        data['button'] = LocalesManager.button
+        data['album'] = []
+
+        if hasattr(event, 'media_group_id') and event.media_group_id:
+            try:
+                self.album_data[event.media_group_id].append(event)
+                return
+
+            except KeyError:
+                self.album_data[event.media_group_id] = [event]
+                await asyncio.sleep(self.latency)
+
+                data['_is_last'] = True
+                data["album"] = self.album_data[event.media_group_id]
+
+        elif hasattr(event, 'photo'):
+            data["album"] = [event]
+
+        # with Session() as session:
+        #     data['session'] = session
+        #
+        #     user = session.get(UserModel, {"uid": event.from_user.id})
+        #
+        #     if user and user.is_banned:
+        #         raise CancelHandler()
+        #
+        #     data['user'] = user
+        #
+        #     await handler(event, data)
+
+        await handler(event, data)
+
+        if hasattr(event, 'media_group_id') and event.media_group_id and data.get("_is_last"):
+            del self.album_data[event.media_group_id]
+            del data['_is_last']
 
         return await handler(event, data)
 
