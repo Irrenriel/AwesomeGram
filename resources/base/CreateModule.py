@@ -13,11 +13,10 @@ from resources.base.exceptions import InvalidModuleName
 class CreateModule(ManageTool):
     template_module_name = 'module_name'
 
-    def __init__(self, path: Path):
-        name_index = argv.index('--create-module') + 1
-        super().__init__(path, name_index)
+    def __init__(self, path: Path, name_index: int, *args, **kwargs):
+        super().__init__(path, name_index, *args, **kwargs)
 
-        self.name = argv[name_index].lower()
+        self.name = argv[name_index + 1].lower()
 
         if any([ch in self.name for ch in punctuation]):
             raise InvalidModuleName

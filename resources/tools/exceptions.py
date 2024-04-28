@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __all__ = [
-    'DBConnectUrlNotFound', 'InvalidDatabaseName'
+    'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName'
 ]
 
 
@@ -17,4 +17,10 @@ class DBConnectUrlNotFound(ToolsError):
 class InvalidDatabaseName(ToolsError):
     def __init__(self):
         msg = 'Invalid database name. Punctuation marks are not allowed and the maximum number of characters is 64.'
+        super().__init__(msg)
+
+
+class InvalidModelName(ToolsError):
+    def __init__(self):
+        msg = 'Invalid model name. Punctuation marks are not allowed and the maximum number of characters is 64.'
         super().__init__(msg)

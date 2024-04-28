@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import os
 from importlib import import_module
 from pathlib import Path
 from string import punctuation
 from sys import argv
 
-from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
 from resources.base.core import DirectoriesAndFilesChecking
@@ -16,8 +14,8 @@ from resources.tools.exceptions import DBConnectUrlNotFound, InvalidDatabaseName
 class InitDatabase(CustomTool):
     __db_name = None
 
-    def __init__(self, path: Path):
-        super().__init__(path)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         if any([ch in self._db_name for ch in punctuation]):
             raise InvalidDatabaseName

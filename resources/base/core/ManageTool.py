@@ -8,6 +8,7 @@ from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 
 from resources.base.core.AbstractTool import AbstractTool
+from resources.base.core.ArgvData import ArgvData
 from resources.base.exceptions import ArgumentValueNotFound
 
 
@@ -15,8 +16,9 @@ class ManageTool(AbstractTool, ABC):
     overwrite = True
     linux_mode = True
     linux_header = f'# -*- coding: utf-8 -*-\n'
+    argv_data: ArgvData = None
 
-    def __init__(self, path: Path, name_index: Optional[int] = None):
+    def __init__(self, path: Path, name_index: Optional[int] = None, *args, **kwargs):
         self.path = path
 
         if name_index and name_index >= len(argv):
@@ -25,10 +27,12 @@ class ManageTool(AbstractTool, ABC):
         self._args_processing(name_index or 0)
 
     def _args_processing(self, index):
-        arg_keys = ('overwrite', 'linux',)
+        arg_keys = ('overwrite', 'linux', 'async')
+        content = []
 
-        for arg in argv[index:]:
+        for arg in argv[index + 1:]:
             if '=' not in arg:
+                content.append(arg)
                 continue
 
             args = arg.split('=')
@@ -56,6 +60,12 @@ class ManageTool(AbstractTool, ABC):
                 self.linux_mode = True if v in ['true', '1'] else False
 
             self.linux_header = f'# -*- coding: utf-8 -*-\n' if self.linux_mode else ''
+
+        self.argv_data = ArgvData(
+            command=argv[index],
+            argv=tuple(argv[index + 1:]),
+            content=tuple(content)
+        )
 
     def _creating_level(self, tpl_path, src_path):
         for ent in os.listdir(tpl_path):

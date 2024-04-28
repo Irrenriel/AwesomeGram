@@ -1,5 +1,5 @@
 {{ header -}}
-from datetime import datetime
+from datetime import datetime, UTC
 
 from sqlalchemy import Column, BIGINT, TEXT, Enum, BOOLEAN, DateTime
 
@@ -16,8 +16,8 @@ class UserModel(Base):
 
     # Settings Data:
     language = Column("language", Enum(Languages), default=Languages.EN)
-    created_at = Column("created_at", DateTime, default=datetime.utcnow)
-    updated_at = Column("updated_at", DateTime, default=datetime.utcnow)
+    created_at = Column("created_at", DateTime, default=datetime.now(UTC))
+    updated_at = Column("updated_at", DateTime, default=datetime.now(UTC))
 
     # Ban Data:
     is_banned = Column("is_banned", BOOLEAN, default=False)

@@ -1,0 +1,10 @@
+{{ header -}}
+{{ imports }}
+
+
+class {{ model_name }}(Base):
+    __tablename__ = "{{ table_name }}"
+
+    {% for line in content -%}
+    {{ line }}
+    {% endfor %}
