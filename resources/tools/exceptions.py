@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __all__ = [
     'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName', 'UnknownColumnType',
-    'UnknownColumnOption'
+    'UnknownColumnOption', 'ModelAlreadyExists'
 ]
 
 
@@ -36,4 +36,10 @@ class UnknownColumnType(ToolsError):
 class UnknownColumnOption(ToolsError):
     def __init__(self, name: str, available: list):
         msg = f'Unknown column type or option "{name}". Available options: {", ".join(available)}.'
+        super().__init__(msg)
+
+
+class ModelAlreadyExists(ToolsError):
+    def __init__(self, path: str):
+        msg = f'Model file "{path}" already exists! Pass overwrite=true to replace it.'
         super().__init__(msg)
