@@ -7,6 +7,7 @@ from pathlib import Path
 from alembic.config import Config
 from alembic import command
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from loguru import logger
 
 from modules.config import config
@@ -16,7 +17,7 @@ from resources.base import LocalesManager
 
 # Main variables:
 path = Path(__file__).parent
-bot = Bot(token=config.BOT_TOKEN, parse_mode=config.PARSE_MODE)
+bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=config.PARSE_MODE))
 dp = Dispatcher()
 
 

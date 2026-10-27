@@ -1,5 +1,9 @@
 from pathlib import Path
-from sys import argv
+from sys import argv, version_info
+
+if version_info < (3, 12):
+    print('AwesomeGram requires Python 3.12 or newer, current: {}.{}'.format(*version_info[:2]))
+    exit(1)
 
 try:
     from loguru import logger
