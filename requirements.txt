@@ -5,6 +5,6 @@ PyYAML==6.0.3
 alembic==1.20.1
 aiogram==3.31.0
 loguru==0.7.3
-SQLAlchemy==2.1.6
+SQLAlchemy[asyncio]==2.1.6
 pydantic-settings==2.16.1
 asyncpg==0.32.0
