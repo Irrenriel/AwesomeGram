@@ -6,13 +6,14 @@ from sys import argv
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
+from loguru import logger
 
 from resources.base.core import AbstractTool, ArgvData
 from resources.base.exceptions import ArgumentValueNotFound
 
 
 class CustomTool(AbstractTool, ABC):
-    overwrite = True
+    overwrite = False                   # Existing files are kept unless overwrite=true is passed
     linux_mode = True
     async_mode = False
     linux_header = f'# -*- coding: utf-8 -*-\n'
@@ -96,6 +97,7 @@ class CustomTool(AbstractTool, ABC):
             # Python files:
             if clean.endswith('.py') or clean.endswith('.yml'):
                 if os.path.isfile(src_path / clean) and not self.overwrite:
+                    logger.warning(f'Skipped existing file "{src_path / clean}" (pass overwrite=true to replace it)')
                     continue
 
                 tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
