@@ -20,7 +20,8 @@ class Base(DeclarativeBase):
             return session.execute(expression)
 
         with SessionContext() as session:
-            return session.execute(expression)
+            # Rows must be fetched before the session closes (AsyncSession does the same internally)
+            return session.execute(expression, execution_options={'prebuffer_rows': True})
 
 
 @contextmanager
