@@ -7,7 +7,7 @@ from loguru import logger
 
 from resources.base.core import DirectoriesAndFilesChecking
 from resources.tools.core import CustomTool
-from resources.tools.exceptions import InvalidModelName
+from resources.tools.exceptions import InvalidModelName, UnknownColumnType
 
 
 class CreateModel(CustomTool):
@@ -142,7 +142,7 @@ class CreateModel(CustomTool):
             return 'Enum(Languages)'
 
         if not set_opt:
-            return 'SKIPPED'
+            raise UnknownColumnType(arg, [*self._AVAILABLE_SIMPLE_TYPES, 'lang', 'language'])
 
     def _set_opt(self, arg):
         if arg in self._AVAILABLE_OPTS:

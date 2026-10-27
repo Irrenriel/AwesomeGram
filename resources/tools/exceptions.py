@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __all__ = [
-    'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName'
+    'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName', 'UnknownColumnType'
 ]
 
 
@@ -23,4 +23,10 @@ class InvalidDatabaseName(ToolsError):
 class InvalidModelName(ToolsError):
     def __init__(self):
         msg = 'Invalid model name. Punctuation marks are not allowed and the maximum number of characters is 64.'
+        super().__init__(msg)
+
+
+class UnknownColumnType(ToolsError):
+    def __init__(self, name: str, available: list):
+        msg = f'Unknown column type "{name}". Available types: {", ".join(available)}.'
         super().__init__(msg)
