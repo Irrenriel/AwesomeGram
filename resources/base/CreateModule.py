@@ -7,7 +7,7 @@ from sys import argv
 from loguru import logger
 
 from resources.base.core import ManageTool
-from resources.base.exceptions import InvalidModuleName
+from resources.base.exceptions import ArgumentValueNotFound, InvalidModuleName
 
 
 class CreateModule(ManageTool):
@@ -15,6 +15,9 @@ class CreateModule(ManageTool):
 
     def __init__(self, path: Path, name_index: int, *args, **kwargs):
         super().__init__(path, name_index, *args, **kwargs)
+
+        if name_index + 1 >= len(argv) or '=' in argv[name_index + 1]:
+            raise ArgumentValueNotFound(argv[name_index])
 
         self.name = argv[name_index + 1].lower()
 
