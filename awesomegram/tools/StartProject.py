@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import argparse as _argparse
+import keyword as _keyword
 import typing as _typing
 
 from .BaseTool import BaseTool
@@ -21,6 +22,13 @@ class StartProject(BaseTool):
 
         if len(value) < 6 or len(value) > 32:
             raise _argparse.ArgumentTypeError('Project name must be between 6 and 32 characters!')
+
+        # The project directory is imported as a Python package, so the name must be a valid identifier:
+        if not value.lower().isidentifier() or _keyword.iskeyword(value.lower()):
+            raise _argparse.ArgumentTypeError(
+                'Project name may contain only letters, digits and "_", must not start with a digit '
+                'and must not be a Python keyword!'
+            )
 
         return value
 
