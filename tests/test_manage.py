@@ -89,10 +89,10 @@ def test_create_model(project):
     assert_ok(manage(project, '--create-module', 'first'))
     assert_ok(manage(project, '--init-db'))
 
-    result = manage(project, '--create-model', 'user', 'id:int:primary', 'name:text:null', 'created_at:datetime:utc')
+    result = manage(project, '--create-model', 'post', 'id:int:primary', 'name:text:null', 'created_at:datetime:utc')
 
     assert_ok(result)
-    model = project / 'resources' / 'models' / 'tables' / 'user_model.py'
+    model = project / 'resources' / 'models' / 'tables' / 'post_model.py'
     assert_compiles(model)
     assert 'default=lambda: datetime.now(UTC)' in model.read_text(encoding='utf-8')
 
@@ -105,7 +105,7 @@ def test_create_model_rejects_unknown_type_and_option(project, field, error):
     assert_ok(manage(project, '--create-module', 'first'))
     assert_ok(manage(project, '--init-db'))
 
-    result = manage(project, '--create-model', 'user', 'id:int:primary', field)
+    result = manage(project, '--create-model', 'post', 'id:int:primary', field)
 
     assert result.returncode != 0
     assert error in result.stderr
@@ -172,3 +172,80 @@ def test_generated_db_layer_writes_and_reads(project, tmp_path, async_mode):
 
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "[('y', True)]"
+
+
+MY_EDIT = '# user edit\n'
+
+
+def append_edit(*files: Path):
+    for file in files:
+        with open(file, 'a', encoding='utf-8') as f:
+            f.write(MY_EDIT)
+
+
+def has_edit(file: Path) -> bool:
+    return MY_EDIT in file.read_text(encoding='utf-8')
+
+
+def test_create_module_keeps_user_edits_and_rebuilds_module_list(project):
+    assert_ok(manage(project, '--create-module', 'first'))
+    edited = [
+        project / 'modules' / 'config.py',
+        project / 'resources' / 'locales' / 'en.yml',
+        project / 'resources' / 'middlewares' / 'main_middleware.py',
+        project / 'modules' / 'first' / 'handlers.py',
+    ]
+    append_edit(*edited)
+
+    result = manage(project, '--create-module', 'second')
+
+    assert_ok(result)
+    assert all(has_edit(f) for f in edited)
+    assert 'Skipped existing file' in result.stderr
+    installing = (project / 'modules' / 'installing.py').read_text(encoding='utf-8')
+    assert 'install_first_handlers' in installing and 'install_second_handlers' in installing
+
+
+def test_create_module_overwrite_true_replaces_shared_files(project):
+    assert_ok(manage(project, '--create-module', 'first'))
+    config = project / 'modules' / 'config.py'
+    append_edit(config)
+
+    assert_ok(manage(project, '--create-module', 'second', 'overwrite=true'))
+
+    assert not has_edit(config)
+
+
+def test_create_app_keeps_existing_app_unless_overwrite(project):
+    assert_ok(manage(project, '--create-module', 'first'))
+    assert_ok(manage(project, '--create-app'))
+    app = project / 'app.py'
+    append_edit(app)
+
+    assert_ok(manage(project, '--create-app'))
+    assert has_edit(app)
+
+    assert_ok(manage(project, '--create-app', 'overwrite=true'))
+    assert not has_edit(app)
+
+
+def test_init_db_rerun_keeps_user_edits(project):
+    assert_ok(manage(project, '--create-module', 'first'))
+    assert_ok(manage(project, '--init-db'))
+    edited = [project / 'core' / 'database' / 'db.py', project / 'resources' / 'models' / 'tables' / 'user_model.py']
+    append_edit(*edited)
+
+    assert_ok(manage(project, '--init-db'))
+
+    assert all(has_edit(f) for f in edited)
+
+
+def test_create_model_refuses_to_replace_existing_model(project):
+    assert_ok(manage(project, '--create-module', 'first'))
+    assert_ok(manage(project, '--init-db'))  # creates user_model.py
+
+    result = manage(project, '--create-model', 'user', 'id:int:primary')
+
+    assert result.returncode != 0
+    assert 'ModelAlreadyExists' in result.stderr
+    assert_ok(manage(project, '--create-model', 'user', 'id:int:primary', 'overwrite=true'))
