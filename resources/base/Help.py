@@ -15,7 +15,7 @@ Available commands to use:
 
 
 class Help(AbstractTool):
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, *args, **kwargs):
         pass
 
     def on_process(self):
