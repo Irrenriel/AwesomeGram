@@ -1,12 +1,18 @@
 {{ header -}}
+from pathlib import Path
 from sys import argv
 
-from pydantic import BaseConfig
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Config(BaseConfig):
+class Config(BaseSettings):
+    # Values come from environment variables or the .env file in the project root (keep it out of git)
+    model_config = SettingsConfigDict(
+        env_file=Path(__file__).parent.parent / '.env', env_file_encoding='utf-8', extra='ignore'
+    )
+
     # == Development == #
-    APP_VERSION = "1.0"                 # Version control for development
+    APP_VERSION: str = "1.0"            # Version control for development
     DEBUG: bool = "--debug" in argv     # Free flag
 
     # == Base Variables == #
