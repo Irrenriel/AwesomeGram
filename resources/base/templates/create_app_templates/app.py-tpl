@@ -62,8 +62,8 @@ def create_loggers():
     dt = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
     # Logger:
-    logger.add(f"logs\\stream_{dt}.log", level="INFO", backtrace=True, diagnose=True)
-    logger.add(f"logs\\errors_{dt}.log", level="ERROR", backtrace=True, diagnose=True)
+    logger.add(path / "logs" / f"stream_{dt}.log", level="INFO", backtrace=True, diagnose=True)
+    logger.add(path / "logs" / f"errors_{dt}.log", level="ERROR", backtrace=True, diagnose=True)
 
 
 async def main():
