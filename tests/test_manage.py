@@ -3,8 +3,10 @@
 Smoke tests for manage.py: every command runs on a fresh copy of the repository
 and the generated files at least compile.
 
-Run: pip install -r requirements.txt pytest && python -m pytest tests
+Run: pip install -r requirements.txt pytest aiosqlite && python -m pytest tests
+(aiosqlite is optional: without it the async DB test is skipped)
 """
+import os
 import py_compile
 import shutil
 import subprocess
@@ -107,3 +109,66 @@ def test_create_model_rejects_unknown_type_and_option(project, field, error):
 
     assert result.returncode != 0
     assert error in result.stderr
+
+
+def run_python(project: Path, code: str, cwd: Path) -> subprocess.CompletedProcess:
+    # Run code against the generated project from another cwd, like a real deployment
+    env = {**os.environ, 'PYTHONPATH': str(project)}
+    return subprocess.run([sys.executable, '-c', code], cwd=cwd, env=env, capture_output=True, text=True, timeout=60)
+
+
+def test_generated_app_starts_with_config_from_env_file(project, tmp_path):
+    assert_ok(manage(project, '--create-module', 'first'))
+    assert_ok(manage(project, '--create-app'))
+    (project / '.env').write_text('BOT_TOKEN=42:TEST\nPARSE_MODE=MarkdownV2\n', encoding='utf-8')
+
+    # No network: only Bot creation, locales and handlers installation
+    result = run_python(
+        project, 'import asyncio, app; asyncio.run(app.startup_func(app.dp)); print(app.bot.default.parse_mode)', tmp_path
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == 'MarkdownV2'
+    assert 'Deprecat' not in result.stderr, result.stderr
+
+
+DB_CHECK = '''
+import asyncio
+from sqlalchemy import select, update
+import core.database.db as db
+from resources.models.tables.note_model import NoteModel
+
+async def main():
+    if {is_async}:
+        async with db.Engine.begin() as conn:
+            await conn.run_sync(db.Base.metadata.create_all)
+        async with db.AsyncSessionContext() as session:
+            session.add(NoteModel(id=1, body='x'))
+        await db.Base.execute(update(NoteModel).values(body='y'))
+        rows = (await db.Base.execute(select(NoteModel))).scalars().all()
+    else:
+        db.Base.metadata.create_all(db.Engine)
+        with db.SessionContext() as session:
+            session.add(NoteModel(id=1, body='x'))
+        db.Base.execute(update(NoteModel).values(body='y'))
+        rows = db.Base.execute(select(NoteModel)).scalars().all()
+    print([(r.body, r.created_at is not None) for r in rows])
+
+asyncio.run(main())
+'''
+
+
+@pytest.mark.parametrize('async_mode', [False, True])
+def test_generated_db_layer_writes_and_reads(project, tmp_path, async_mode):
+    if async_mode:
+        pytest.importorskip('aiosqlite')
+    driver = 'sqlite+aiosqlite' if async_mode else 'sqlite'
+    assert_ok(manage(project, '--create-module', 'first'))
+    (project / '.env').write_text(f'DB_CONNECT={driver}:///{tmp_path / "test.db"}\n', encoding='utf-8')
+    assert_ok(manage(project, '--init-db', f'async={str(async_mode).lower()}'))
+    assert_ok(manage(project, '--create-model', 'note', 'id:int:primary', 'body:text:null', 'created_at:datetime:utc'))
+
+    result = run_python(project, DB_CHECK.format(is_async=async_mode), tmp_path)
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "[('y', True)]"
