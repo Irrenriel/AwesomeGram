@@ -34,6 +34,7 @@ def SessionContext() -> Session:
     except Exception:
         session.rollback()
         logger.error(traceback.format_exc())
+        raise
 
     finally:
         session.close()
