@@ -7,7 +7,7 @@ from loguru import logger
 
 from resources.base.core import DirectoriesAndFilesChecking
 from resources.tools.core import CustomTool
-from resources.tools.exceptions import InvalidModelName, UnknownColumnType
+from resources.tools.exceptions import InvalidModelName, UnknownColumnOption, UnknownColumnType
 
 
 class CreateModel(CustomTool):
@@ -167,6 +167,8 @@ class CreateModel(CustomTool):
             case 'en':
                 self._OTHER_IMPORTS.add('from resources.models.enums import Languages')
                 return ', default=Languages.EN'
+
+        raise UnknownColumnOption(arg, [*self._AVAILABLE_OPTS, 'utc', 'true', 'false', 'language', 'en'])
 
     def _clear_name(self, ent: str):
         if not ent.endswith('-tpl'):

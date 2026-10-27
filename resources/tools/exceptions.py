@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 __all__ = [
-    'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName', 'UnknownColumnType'
+    'DBConnectUrlNotFound', 'InvalidDatabaseName', 'InvalidModelName', 'UnknownColumnType',
+    'UnknownColumnOption'
 ]
 
 
@@ -29,4 +30,10 @@ class InvalidModelName(ToolsError):
 class UnknownColumnType(ToolsError):
     def __init__(self, name: str, available: list):
         msg = f'Unknown column type "{name}". Available types: {", ".join(available)}.'
+        super().__init__(msg)
+
+
+class UnknownColumnOption(ToolsError):
+    def __init__(self, name: str, available: list):
+        msg = f'Unknown column type or option "{name}". Available options: {", ".join(available)}.'
         super().__init__(msg)
