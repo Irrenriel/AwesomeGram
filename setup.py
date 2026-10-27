@@ -56,6 +56,7 @@ _setup(
     # Run:
     entry_points={
         'console_scripts': [
+            'awesomegram=awesomegram:main',  # used by generated settings.py and Dockerfile
             'AwesomeGram=awesomegram:main',
         ],
     },
