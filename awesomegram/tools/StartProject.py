@@ -48,6 +48,8 @@ class StartProject(BaseTool):
     def _included_files(self) -> _typing.List[str]:
         return [
             'Dockerfile',
+            '.env.example',
+            '.gitignore',
         ]
 
     @property

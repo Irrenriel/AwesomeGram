@@ -51,4 +51,4 @@ include = ["awesomegram", "awesomegram.*"]
 
 # Templates are not Python files, so they must be listed to get into the installed package:
 [tool.setuptools.package-data]
-awesomegram = ["templates/**/*"]
+awesomegram = ["templates/**/*", "templates/**/.*"]  # second pattern: dotfiles (.env.example, .gitignore)
