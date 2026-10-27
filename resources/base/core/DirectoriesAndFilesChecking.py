@@ -9,6 +9,7 @@ from resources.base.exceptions import ModulesNotCreated
 class DirectoriesAndFilesChecking:
     def __new__(cls, directories_and_files: List[Path], *args, **kwargs):
         for directory_or_file in directories_and_files:
-            str_directory_or_file = str(directory_or_file)
-            if not (path.isfile if '.' in str_directory_or_file else path.exists)(directory_or_file):
-                raise ModulesNotCreated(str_directory_or_file)
+            # File or directory is decided by the last part only: "my.bot/modules" is a directory
+            is_file = bool(Path(directory_or_file).suffix)
+            if not (path.isfile if is_file else path.exists)(directory_or_file):
+                raise ModulesNotCreated(str(directory_or_file))
