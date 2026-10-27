@@ -79,5 +79,13 @@ class CreateModule(ManageTool):
         return {
             'header': self.linux_header,
             'name': self.name,
-            'modules': [i for i in os.listdir(self.path / "modules") if '.' not in i and i != 'middlewares']
+            'modules': self._modules
         }
+
+    @property
+    def _modules(self):
+        # Only module directories: skip files and service dirs like __pycache__
+        return [
+            i for i in sorted(os.listdir(self.path / "modules"))
+            if (self.path / "modules" / i).is_dir() and not i.startswith(('_', '.')) and i != 'middlewares'
+        ]
