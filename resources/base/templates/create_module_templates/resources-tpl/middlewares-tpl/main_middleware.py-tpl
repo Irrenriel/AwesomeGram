@@ -63,13 +63,13 @@ class MainMiddleware(BaseMiddleware):
         #
         #     await handler(event, data)
 
-        await handler(event, data)
+        result = await handler(event, data)
 
         if hasattr(event, 'media_group_id') and event.media_group_id and data.get("_is_last"):
             del self.album_data[event.media_group_id]
             del data['_is_last']
 
-        return await handler(event, data)
+        return result
 
     @staticmethod
     def _get_content(event: Union[types.Message, types.CallbackQuery, types.InlineQuery]) -> str:

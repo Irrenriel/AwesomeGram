@@ -34,6 +34,7 @@ async def AsyncSessionContext() -> AsyncSession:
     except Exception:
         await session.rollback()
         logger.error(traceback.format_exc())
+        raise
 
     finally:
         await session.close()

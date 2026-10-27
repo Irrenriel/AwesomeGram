@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
+
 __all__ = [
     'ArgumentValueNotFound', 'InvalidModuleName', 'ModulesNotCreated', 'LangNotFound'
 ]
@@ -22,7 +24,7 @@ class InvalidModuleName(BaseError):
 
 class ModulesNotCreated(BaseError):
     def __init__(self, name: str):
-        msg = f'Directory "{name}" not exist!' if '.' not in name else f'File "{name}" not exist!'
+        msg = f'File "{name}" not exist!' if Path(name).suffix else f'Directory "{name}" not exist!'
         msg += ' Please, create module with module creator. (manage.py --create-module <module_name>)'
         super().__init__(msg)
 

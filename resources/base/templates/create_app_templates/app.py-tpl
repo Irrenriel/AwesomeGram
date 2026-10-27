@@ -30,7 +30,7 @@ async def startup_func(dispatcher: Dispatcher):
     logger.info('= = = = = = = = =')
 
     # Installing LocaleManager:
-    LocalesManager.default_locale = 'RU'
+    LocalesManager.default_locale = 'EN'  # must match a file in resources/locales (en.yml -> 'EN')
     LocalesManager.init(path)
 
     # Installing Handlers & Middlewares:
@@ -62,8 +62,8 @@ def create_loggers():
     dt = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
     # Logger:
-    logger.add(f"logs\\stream_{dt}.log", level="INFO", backtrace=True, diagnose=True)
-    logger.add(f"logs\\errors_{dt}.log", level="ERROR", backtrace=True, diagnose=True)
+    logger.add(path / "logs" / f"stream_{dt}.log", level="INFO", backtrace=True, diagnose=True)
+    logger.add(path / "logs" / f"errors_{dt}.log", level="ERROR", backtrace=True, diagnose=True)
 
 
 async def main():
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         pass
 
     except Exception as e:
-        logger.error(f'Exception happend: {e}', exc_info=True)
+        logger.exception(f'Exception happend: {e}')
 
     finally:
         logger.info('= = = Bot has been disabled! = = =')

@@ -7,7 +7,7 @@ from loguru import logger
 
 from resources.base.core import DirectoriesAndFilesChecking
 from resources.tools.core import CustomTool
-from resources.tools.exceptions import InvalidModelName
+from resources.tools.exceptions import InvalidModelName, UnknownColumnOption, UnknownColumnType
 
 
 class CreateModel(CustomTool):
@@ -142,7 +142,7 @@ class CreateModel(CustomTool):
             return 'Enum(Languages)'
 
         if not set_opt:
-            return 'SKIPPED'
+            raise UnknownColumnType(arg, [*self._AVAILABLE_SIMPLE_TYPES, 'lang', 'language'])
 
     def _set_opt(self, arg):
         if arg in self._AVAILABLE_OPTS:
@@ -151,7 +151,8 @@ class CreateModel(CustomTool):
         match arg:
             case 'utc':
                 self._BASE_IMPORTS.add('from datetime import datetime, UTC')
-                return ', default=datetime.now(UTC)'
+                # lambda: evaluated on each insert, not once at import
+                return ', default=lambda: datetime.now(UTC)'
 
             case 'true':
                 return ', default=True'
@@ -166,6 +167,8 @@ class CreateModel(CustomTool):
             case 'en':
                 self._OTHER_IMPORTS.add('from resources.models.enums import Languages')
                 return ', default=Languages.EN'
+
+        raise UnknownColumnOption(arg, [*self._AVAILABLE_OPTS, 'utc', 'true', 'false', 'language', 'en'])
 
     def _clear_name(self, ent: str):
         if not ent.endswith('-tpl'):
