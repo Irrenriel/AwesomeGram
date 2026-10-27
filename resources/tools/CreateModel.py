@@ -151,7 +151,8 @@ class CreateModel(CustomTool):
         match arg:
             case 'utc':
                 self._BASE_IMPORTS.add('from datetime import datetime, UTC')
-                return ', default=datetime.now(UTC)'
+                # lambda: evaluated on each insert, not once at import
+                return ', default=lambda: datetime.now(UTC)'
 
             case 'true':
                 return ', default=True'
