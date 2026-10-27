@@ -31,7 +31,9 @@ _setup(
 
     # Packages:
     python_requires=">=3.12",
-    packages=_find_packages(),
+    packages=_find_packages(include=['awesomegram', 'awesomegram.*']),
+    # Templates are not Python files, so they must be listed to get into the installed package:
+    package_data={'awesomegram': ['templates/**/*']},
     install_requires=[
         # Base Modules:
         'python-dotenv>=1.1.0',
