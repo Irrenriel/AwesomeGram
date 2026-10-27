@@ -1,0 +1,54 @@
+# Standard PEP 621 metadata: installable with uv, pip, poetry and any PEP 517 front-end
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AwesomeGram"
+version = "0.1"
+description = "AwesomeGram is a framework for quickly creating and maintaining projects based on the Aiogram library."
+readme = { content-type = "text/markdown", text = """\
+**AwesomGram** is a framework for quickly creating and maintaining projects based on the Aiogram library.
+
+Inspired by Django, we aimed to simplify common boilerplate code with automatic generation triggered by a single or
+multiple commands. We focused on making it universal and scalable, like a modular builder where you use ready-made
+building blocks to construct your project—while keeping it independent from requiring all blocks to function.
+""" }
+authors = [{ name = "DriveWaveTech" }]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    # Base Modules:
+    "python-dotenv>=1.1.0",
+    "pydantic-settings>=2.9.1",
+    "argcomplete>=3.6.2",
+
+    # Parsing Modules:
+    "PyYAML>=6.0.2",
+    "Jinja2>=3.1.6",
+
+    # Database Modules:
+    "asyncpg>=0.30.0",
+    "SQLAlchemy>=2.0.40",
+    "alembic>=1.15.2",
+
+    # Telegram Modules:
+    "aiogram>=3.20.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/DriveWaveTech"
+
+[project.scripts]
+awesomegram = "awesomegram:main"  # used by generated settings.py and Dockerfile
+AwesomeGram = "awesomegram:main"
+
+[tool.setuptools.packages.find]
+include = ["awesomegram", "awesomegram.*"]
+
+# Templates are not Python files, so they must be listed to get into the installed package:
+[tool.setuptools.package-data]
+awesomegram = ["templates/**/*"]
