@@ -6,7 +6,6 @@ import pathlib as _pathlib
 import typing as _typing
 
 import jinja2 as _jinja2
-from pandas.core.dtypes.common import ensure_int8
 
 
 class BaseTool(_abc.ABC):
