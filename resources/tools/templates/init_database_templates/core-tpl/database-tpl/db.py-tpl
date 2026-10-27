@@ -19,7 +19,7 @@ class Base(DeclarativeBase):
         if session:
             return session.execute(expression)
 
-        with Session() as session:
+        with SessionContext() as session:
             return session.execute(expression)
 
 
