@@ -30,7 +30,7 @@ async def startup_func(dispatcher: Dispatcher):
     logger.info('= = = = = = = = =')
 
     # Installing LocaleManager:
-    LocalesManager.default_locale = 'RU'
+    LocalesManager.default_locale = 'EN'  # must match a file in resources/locales (en.yml -> 'EN')
     LocalesManager.init(path)
 
     # Installing Handlers & Middlewares:
