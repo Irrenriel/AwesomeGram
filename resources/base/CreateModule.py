@@ -12,6 +12,8 @@ from resources.base.exceptions import ArgumentValueNotFound, InvalidModuleName
 
 class CreateModule(ManageTool):
     template_module_name = 'module_name'
+    # Built from the list of all modules, so they must be rebuilt when a module is added
+    always_render = ('modules/installing.py', 'modules/states.py')
 
     def __init__(self, path: Path, name_index: int, *args, **kwargs):
         super().__init__(path, name_index, *args, **kwargs)
