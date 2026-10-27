@@ -7,7 +7,7 @@ from loguru import logger
 
 from resources.base.core import DirectoriesAndFilesChecking
 from resources.tools.core import CustomTool
-from resources.tools.exceptions import InvalidModelName, UnknownColumnOption, UnknownColumnType
+from resources.tools.exceptions import InvalidModelName, ModelAlreadyExists, UnknownColumnOption, UnknownColumnType
 
 
 class CreateModel(CustomTool):
@@ -70,6 +70,10 @@ class CreateModel(CustomTool):
                 self.path / 'resources' / 'models' / 'tables' / '__init__.py'
             ]
         )
+
+        model_file = self.path / 'resources' / 'models' / 'tables' / f'{self._file_name}.py'
+        if model_file.is_file() and not self.overwrite:
+            raise ModelAlreadyExists(str(model_file))
 
         self._create_content()
 

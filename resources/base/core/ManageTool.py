@@ -6,6 +6,7 @@ from sys import argv
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
+from loguru import logger
 
 from resources.base.core.AbstractTool import AbstractTool
 from resources.base.core.ArgvData import ArgvData
@@ -13,7 +14,8 @@ from resources.base.exceptions import ArgumentValueNotFound
 
 
 class ManageTool(AbstractTool, ABC):
-    overwrite = True
+    overwrite = False                   # Existing files are kept unless overwrite=true is passed
+    always_render = ()                  # Files (relative to project root) rebuilt on every run
     linux_mode = True
     linux_header = f'# -*- coding: utf-8 -*-\n'
     argv_data: ArgvData = None
@@ -88,7 +90,8 @@ class ManageTool(AbstractTool, ABC):
 
             # Python files:
             if clean.endswith('.py') or clean.endswith('.yml'):
-                if os.path.isfile(src_path / clean) and not self.overwrite:
+                if os.path.isfile(src_path / clean) and not self._can_render(src_path / clean):
+                    logger.warning(f'Skipped existing file "{src_path / clean}" (pass overwrite=true to replace it)')
                     continue
 
                 tpl = Environment(loader=FileSystemLoader(tpl_path)).get_template(ent)
@@ -102,6 +105,9 @@ class ManageTool(AbstractTool, ABC):
 
             else:
                 self._creating_files(tpl_path / ent, src_path / clean)
+
+    def _can_render(self, file: Path) -> bool:
+        return self.overwrite or file.relative_to(self.path).as_posix() in self.always_render
 
     @staticmethod
     def _clear_name(ent):
