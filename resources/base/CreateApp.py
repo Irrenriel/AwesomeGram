@@ -15,6 +15,10 @@ class CreateApp(ManageTool):
             ]
         )
 
+        if (self.path / 'app.py').is_file() and not self.overwrite:
+            logger.warning('"app.py" already exists, nothing changed (pass overwrite=true to replace it)')
+            return
+
         template_path = self.path / "resources" / "base" / "templates" / "create_app_templates"
 
         tpl = Environment(loader=FileSystemLoader(template_path)).get_template('app.py-tpl')
